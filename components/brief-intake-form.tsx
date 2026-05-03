@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
-import { CheckCircle2, AlertCircle, ChevronRight, ChevronLeft, Lightbulb, Trophy, Briefcase, Clock } from "lucide-react";
+import { CheckCircle2, AlertCircle, ChevronRight, ChevronLeft, Lightbulb, Trophy, Briefcase, Clock, Sparkles, ShoppingBag, Heart, Users, Youtube, Smartphone } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -71,6 +71,81 @@ const COMPETITIONS = [
 ];
 
 type BriefMode = "commercial" | "competition";
+
+interface BriefTemplate {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  duration: string;
+  tone: string;
+  platform: string;
+  briefTitle: string;
+  brand: string;
+  targetAudience: string;
+  keyMessage: string;
+  isCompetition?: boolean;
+  competition?: string;
+  track?: string;
+}
+
+const BRIEF_TEMPLATES: BriefTemplate[] = [
+  {
+    id: "karyawan-impact",
+    title: "KaryaWAN Impact",
+    description: "AI solving a real Malaysian problem",
+    icon: Sparkles,
+    duration: "45s",
+    tone: "Dramatic",
+    platform: "YouTube",
+    briefTitle: "AI Impact Story - Malaysia",
+    brand: "",
+    targetAudience: "Malaysian tech community, AI enthusiasts, competition judges evaluating real-world AI applications",
+    keyMessage: "Showcase how AI solves a genuine Malaysian problem with measurable impact and innovation",
+    isCompetition: true,
+    competition: "karyawan-2026",
+    track: "Impact",
+  },
+  {
+    id: "product-demo",
+    title: "Product Demo",
+    description: "E-commerce product walkthrough",
+    icon: ShoppingBag,
+    duration: "30s",
+    tone: "Inspirational",
+    platform: "TikTok Shop",
+    briefTitle: "Product Showcase Video",
+    brand: "",
+    targetAudience: "Online shoppers aged 18-35 who discover products through short-form video content",
+    keyMessage: "See the product in action and understand why it solves your problem better than alternatives",
+  },
+  {
+    id: "brand-story",
+    title: "Brand Story",
+    description: "Founder/brand origin story",
+    icon: Heart,
+    duration: "60s",
+    tone: "Heartfelt",
+    platform: "Instagram Reels",
+    briefTitle: "Our Story - Brand Origin",
+    brand: "",
+    targetAudience: "Consumers who value authenticity and connection with the brands they support",
+    keyMessage: "Connect emotionally with our journey and understand the passion behind what we create",
+  },
+  {
+    id: "social-proof",
+    title: "Social Proof",
+    description: "Customer testimonial, UGC style",
+    icon: Users,
+    duration: "30s",
+    tone: "Raw/Authentic",
+    platform: "TikTok",
+    briefTitle: "Real Customer Review",
+    brand: "",
+    targetAudience: "Skeptical buyers who trust peer reviews over polished marketing",
+    keyMessage: "Hear from a real customer about their genuine experience with our product",
+  },
+];
 
 interface CompetitionData {
   competition: string;
@@ -291,6 +366,83 @@ function CountdownTimer({ deadline }: { deadline: string }) {
       <span className="text-sm font-medium text-[#1A1F36]">
         {timeLeft} remaining
       </span>
+    </div>
+  );
+}
+
+function getPlatformIcon(platform: string) {
+  switch (platform) {
+    case "YouTube":
+      return Youtube;
+    case "TikTok":
+    case "TikTok Shop":
+    case "Instagram Reels":
+      return Smartphone;
+    default:
+      return Smartphone;
+  }
+}
+
+function TemplateSelector({ 
+  onSelect 
+}: { 
+  onSelect: (template: BriefTemplate) => void;
+}) {
+  return (
+    <div className="mb-8">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-semibold text-[#1A1F36]">Start from a template</h3>
+        <span className="text-xs text-muted-foreground">Click to pre-fill</span>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {BRIEF_TEMPLATES.map((template) => {
+          const Icon = template.icon;
+          const PlatformIcon = getPlatformIcon(template.platform);
+          return (
+            <button
+              key={template.id}
+              type="button"
+              onClick={() => onSelect(template)}
+              className={cn(
+                "group relative p-4 rounded-xl border-2 text-left transition-all",
+                "bg-white hover:border-[#F5A623]/50 hover:shadow-md",
+                "border-[#1A1F36]/10 focus:outline-none focus:ring-2 focus:ring-[#F5A623]/50"
+              )}
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[#1A1F36]/5 flex items-center justify-center group-hover:bg-[#F5A623]/10 transition-colors">
+                  <Icon className="w-5 h-5 text-[#1A1F36] group-hover:text-[#F5A623] transition-colors" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-semibold text-[#1A1F36] text-sm truncate">
+                      {template.title}
+                    </h4>
+                    {template.isCompetition && (
+                      <Trophy className="w-3.5 h-3.5 text-[#F5A623] flex-shrink-0" />
+                    )}
+                  </div>
+                  <p className="text-xs text-[#1A1F36]/60 mb-2 line-clamp-1">
+                    {template.description}
+                  </p>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1A1F36]/5 text-[10px] font-medium text-[#1A1F36]">
+                      {template.duration}
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#F5A623]/10 text-[10px] font-medium text-[#1A1F36]">
+                      {template.tone}
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1A1F36]/5 text-[10px] font-medium text-[#1A1F36]">
+                      <PlatformIcon className="w-2.5 h-2.5" />
+                      {template.platform}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -556,6 +708,32 @@ export function BriefIntakeForm() {
     }
   };
 
+  const handleTemplateSelect = (template: BriefTemplate) => {
+    // Pre-fill form fields from template
+    setFormData((prev) => ({
+      ...prev,
+      briefTitle: template.briefTitle,
+      platform: template.platform,
+      duration: template.duration,
+      tone: template.tone,
+      targetAudience: template.targetAudience,
+      keyMessage: template.keyMessage,
+    }));
+
+    // If it's a competition template, switch to competition mode and pre-fill competition data
+    if (template.isCompetition && template.competition) {
+      setBriefMode("competition");
+      setCompetitionData((prev) => ({
+        ...prev,
+        competition: template.competition || "",
+        track: template.track || "",
+      }));
+    }
+
+    // Clear any validation errors
+    setErrors({});
+  };
+
   const validateStep = (step: number): boolean => {
     const newErrors: Partial<Record<keyof FormData, string>> = {};
 
@@ -722,6 +900,9 @@ export function BriefIntakeForm() {
   return (
     <Card className="w-full max-w-2xl mx-auto border-0 shadow-lg">
       <CardContent className="pt-8 pb-8">
+        {currentStep === 1 && (
+          <TemplateSelector onSelect={handleTemplateSelect} />
+        )}
         <ModeToggle mode={briefMode} onModeChange={setBriefMode} />
         <ProgressBar currentStep={currentStep} />
 
