@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Navigation } from '@/components/navigation'
+import { NotionStatusProvider } from '@/components/notion-status-provider'
+import { NotionStatusBar } from '@/components/notion-status-bar'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -38,8 +40,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-background">
       <body className="font-sans antialiased">
-        <Navigation />
-        <main>{children}</main>
+        <NotionStatusProvider>
+          <Navigation />
+          <NotionStatusBar />
+          <main>{children}</main>
+        </NotionStatusProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

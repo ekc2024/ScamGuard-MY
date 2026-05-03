@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useNotionStatus } from "./notion-status-provider";
 import {
   Dialog,
   DialogContent,
@@ -662,6 +663,7 @@ function ProgressBar({ currentStep }: { currentStep: number }) {
 
 export function BriefIntakeForm() {
   const router = useRouter();
+  const { showSyncSuccess, setStatus } = useNotionStatus();
   const [briefMode, setBriefMode] = useState<BriefMode>("commercial");
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -793,6 +795,7 @@ export function BriefIntakeForm() {
     setIsSubmitting(true);
     setSubmitStatus("idle");
     setErrorMessage("");
+    setStatus("syncing");
 
     try {
       const response = await fetch("/api/submit-brief", {
@@ -821,6 +824,8 @@ export function BriefIntakeForm() {
       if (result.success) {
         setSubmitStatus("success");
         setSubmittedBriefId(result.pageId);
+        // Show toast notification
+        showSyncSuccess(formData.brand || formData.briefTitle);
       } else {
         setSubmitStatus("error");
         setErrorMessage(result.error || "Something went wrong");
