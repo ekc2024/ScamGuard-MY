@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useNotionStatus } from "./notion-status-provider";
+import { AgentProgressIndicator } from "./agent-progress-indicator";
 import {
   Dialog,
   DialogContent,
@@ -667,6 +668,7 @@ export function BriefIntakeForm() {
   const [briefMode, setBriefMode] = useState<BriefMode>("commercial");
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAgentProgress, setShowAgentProgress] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
@@ -793,6 +795,7 @@ export function BriefIntakeForm() {
     if (!validateStep(3)) return;
 
     setIsSubmitting(true);
+    setShowAgentProgress(true);
     setSubmitStatus("idle");
     setErrorMessage("");
     setStatus("syncing");
@@ -835,6 +838,7 @@ export function BriefIntakeForm() {
       setErrorMessage("Failed to submit brief. Please try again.");
     } finally {
       setIsSubmitting(false);
+      setShowAgentProgress(false);
     }
   };
 
@@ -864,8 +868,31 @@ export function BriefIntakeForm() {
     setBriefMode("commercial");
     setCurrentStep(1);
     setSubmitStatus("idle");
+    setShowAgentProgress(false);
     setErrors({});
   };
+
+  // Show agent progress indicator while submitting
+  if (showAgentProgress && isSubmitting) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto border-0 shadow-lg">
+        <CardContent className="pt-12 pb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-xl font-semibold text-[#1A1F36] mb-2">
+              {briefMode === "competition" ? "Generating Competition Brief" : "Processing Your Brief"}
+            </h2>
+            <p className="text-sm text-[#1A1F36]/60">
+              AI agent is working on your request...
+            </p>
+          </div>
+          <AgentProgressIndicator 
+            isActive={showAgentProgress} 
+            isCompetitionMode={briefMode === "competition"}
+          />
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (submitStatus === "success") {
     return (
