@@ -8,7 +8,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
-import { CheckCircle2, AlertCircle, ChevronRight, ChevronLeft, Lightbulb } from "lucide-react";
+import { CheckCircle2, AlertCircle, ChevronRight, ChevronLeft, Lightbulb, Trophy, Briefcase, Clock } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -41,6 +48,36 @@ const TONES = [
   "Luxurious",
   "Raw/Authentic",
 ];
+
+const COMPETITIONS = [
+  { 
+    id: "karyawan-2026", 
+    name: "KaryaWAN 2026", 
+    deadline: "2026-05-30",
+    tracks: ["Visions", "Impact"]
+  },
+  { 
+    id: "vercel-zero-to-agent", 
+    name: "Vercel Zero to Agent", 
+    deadline: "2026-06-15",
+    tracks: ["Solo", "Team"]
+  },
+  { 
+    id: "other", 
+    name: "Other", 
+    deadline: null,
+    tracks: []
+  },
+];
+
+type BriefMode = "commercial" | "competition";
+
+interface CompetitionData {
+  competition: string;
+  track: string;
+  competitionTitle: string;
+  customDeadline: string;
+}
 
 // Example briefs organized by platform and tone combinations
 const EXAMPLE_BRIEFS: Record<string, Record<string, {
@@ -214,6 +251,87 @@ interface FormData {
   referenceUrl: string;
   deadline: string;
   sourceChannel: string;
+}
+
+function CountdownTimer({ deadline }: { deadline: string }) {
+  const [timeLeft, setTimeLeft] = useState("");
+
+  useState(() => {
+    const updateCountdown = () => {
+      const deadlineDate = new Date(deadline);
+      const now = new Date();
+      const diff = deadlineDate.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        setTimeLeft("Deadline passed");
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+      if (days > 0) {
+        setTimeLeft(`${days}d ${hours}h ${minutes}m`);
+      } else if (hours > 0) {
+        setTimeLeft(`${hours}h ${minutes}m`);
+      } else {
+        setTimeLeft(`${minutes}m`);
+      }
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 60000);
+    return () => clearInterval(interval);
+  });
+
+  return (
+    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#F5A623]/10 border border-[#F5A623]/30">
+      <Clock className="w-4 h-4 text-[#F5A623]" />
+      <span className="text-sm font-medium text-[#1A1F36]">
+        {timeLeft} remaining
+      </span>
+    </div>
+  );
+}
+
+function ModeToggle({ 
+  mode, 
+  onModeChange 
+}: { 
+  mode: BriefMode; 
+  onModeChange: (mode: BriefMode) => void;
+}) {
+  return (
+    <div className="flex items-center p-1 rounded-xl bg-[#1A1F36]/5 mb-6">
+      <button
+        type="button"
+        onClick={() => onModeChange("commercial")}
+        className={cn(
+          "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-medium transition-all",
+          mode === "commercial"
+            ? "bg-white text-[#1A1F36] shadow-sm"
+            : "text-[#1A1F36]/60 hover:text-[#1A1F36]"
+        )}
+      >
+        <Briefcase className="w-4 h-4" />
+        Commercial Brief
+      </button>
+      <button
+        type="button"
+        onClick={() => onModeChange("competition")}
+        className={cn(
+          "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-medium transition-all",
+          mode === "competition"
+            ? "bg-white text-[#1A1F36] shadow-sm"
+            : "text-[#1A1F36]/60 hover:text-[#1A1F36]"
+        )}
+      >
+        <Trophy className="w-4 h-4" />
+        Competition Brief
+      </button>
+    </div>
+  );
 }
 
 function ChipSelect({
@@ -392,12 +510,27 @@ function ProgressBar({ currentStep }: { currentStep: number }) {
 
 export function BriefIntakeForm() {
   const router = useRouter();
+  const [briefMode, setBriefMode] = useState<BriefMode>("commercial");
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [submittedBriefId, setSubmittedBriefId] = useState<string | null>(null);
+
+  const [competitionData, setCompetitionData] = useState<CompetitionData>({
+    competition: "",
+    track: "",
+    competitionTitle: "",
+    customDeadline: "",
+  });
+
+  const selectedCompetition = COMPETITIONS.find(c => c.id === competitionData.competition);
+  const competitionDeadline = selectedCompetition?.deadline || competitionData.customDeadline;
+
+  const updateCompetitionField = <K extends keyof CompetitionData>(field: K, value: CompetitionData[K]) => {
+    setCompetitionData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const [formData, setFormData] = useState<FormData>({
     briefTitle: "",
@@ -539,6 +672,13 @@ export function BriefIntakeForm() {
       deadline: "",
       sourceChannel: "",
     });
+    setCompetitionData({
+      competition: "",
+      track: "",
+      competitionTitle: "",
+      customDeadline: "",
+    });
+    setBriefMode("commercial");
     setCurrentStep(1);
     setSubmitStatus("idle");
     setErrors({});
@@ -582,7 +722,108 @@ export function BriefIntakeForm() {
   return (
     <Card className="w-full max-w-2xl mx-auto border-0 shadow-lg">
       <CardContent className="pt-8 pb-8">
+        <ModeToggle mode={briefMode} onModeChange={setBriefMode} />
         <ProgressBar currentStep={currentStep} />
+
+        {/* Competition Fields - shown when Competition Brief is selected */}
+        {briefMode === "competition" && currentStep === 1 && (
+          <div className="mb-6 p-5 rounded-xl bg-gradient-to-br from-[#F5A623]/5 to-[#F5A623]/10 border border-[#F5A623]/20 space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Trophy className="w-5 h-5 text-[#F5A623]" />
+              <h3 className="font-semibold text-[#1A1F36]">Competition Details</h3>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Competition</Label>
+              <Select
+                value={competitionData.competition}
+                onValueChange={(v) => {
+                  updateCompetitionField("competition", v);
+                  updateCompetitionField("track", "");
+                }}
+              >
+                <SelectTrigger className="bg-white">
+                  <SelectValue placeholder="Select competition" />
+                </SelectTrigger>
+                <SelectContent>
+                  {COMPETITIONS.map((comp) => (
+                    <SelectItem key={comp.id} value={comp.id}>
+                      {comp.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {selectedCompetition && selectedCompetition.tracks.length > 0 && (
+              <div className="space-y-2">
+                <Label>Track</Label>
+                <div className="flex gap-2">
+                  {selectedCompetition.tracks.map((track) => (
+                    <button
+                      key={track}
+                      type="button"
+                      onClick={() => updateCompetitionField("track", track)}
+                      className={cn(
+                        "px-4 py-2 rounded-full text-sm font-medium transition-all border-2",
+                        competitionData.track === track
+                          ? "bg-[#F5A623] text-white border-[#F5A623]"
+                          : "bg-white text-[#1A1F36] border-[#1A1F36]/20 hover:border-[#F5A623]/50"
+                      )}
+                    >
+                      {track}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {competitionData.competition === "other" && (
+              <div className="space-y-2">
+                <Label htmlFor="customDeadline">Submission Deadline</Label>
+                <Input
+                  id="customDeadline"
+                  type="date"
+                  value={competitionData.customDeadline}
+                  onChange={(e) => updateCompetitionField("customDeadline", e.target.value)}
+                  className="bg-white"
+                />
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="competitionTitle">
+                  Competition Title <span className="text-destructive">*</span>
+                </Label>
+                <span className={cn(
+                  "text-xs",
+                  competitionData.competitionTitle.length > 60 
+                    ? "text-destructive" 
+                    : "text-muted-foreground"
+                )}>
+                  {competitionData.competitionTitle.length}/60
+                </span>
+              </div>
+              <Input
+                id="competitionTitle"
+                value={competitionData.competitionTitle}
+                onChange={(e) => updateCompetitionField("competitionTitle", e.target.value.slice(0, 60))}
+                placeholder="e.g., AI Melindungi Keluarga Malaysia"
+                className="bg-white"
+              />
+              <p className="text-xs text-muted-foreground">
+                This title will appear on your competition submission
+              </p>
+            </div>
+
+            {competitionDeadline && (
+              <div className="pt-2">
+                <CountdownTimer deadline={competitionDeadline} />
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Step 1: Brief Details */}
         {currentStep === 1 && (
@@ -828,7 +1069,41 @@ export function BriefIntakeForm() {
 
             {/* Summary */}
             <div className="rounded-xl bg-[#1A1F36]/5 p-6 space-y-4">
-              <h3 className="font-semibold text-[#1A1F36]">Summary</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-[#1A1F36]">Summary</h3>
+                {briefMode === "competition" && (
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F5A623]/20 text-[#1A1F36] text-xs font-medium">
+                    <Trophy className="w-3 h-3" />
+                    Competition
+                  </span>
+                )}
+              </div>
+              
+              {briefMode === "competition" && competitionData.competition && (
+                <div className="pb-3 mb-3 border-b border-[#1A1F36]/10">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-[#1A1F36]/50">Competition</span>
+                      <p className="font-medium text-[#1A1F36]">
+                        {COMPETITIONS.find(c => c.id === competitionData.competition)?.name}
+                      </p>
+                    </div>
+                    {competitionData.track && (
+                      <div>
+                        <span className="text-[#1A1F36]/50">Track</span>
+                        <p className="font-medium text-[#1A1F36]">{competitionData.track}</p>
+                      </div>
+                    )}
+                    {competitionData.competitionTitle && (
+                      <div className="col-span-2">
+                        <span className="text-[#1A1F36]/50">Competition Title</span>
+                        <p className="font-medium text-[#1A1F36]">{competitionData.competitionTitle}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-[#1A1F36]/50">Brief Title</span>
@@ -919,6 +1194,8 @@ export function BriefIntakeForm() {
                   <Spinner className="mr-2" />
                   Submitting...
                 </>
+              ) : briefMode === "competition" ? (
+                "Generate Competition Brief + Survey Copy"
               ) : (
                 "Submit Brief"
               )}
