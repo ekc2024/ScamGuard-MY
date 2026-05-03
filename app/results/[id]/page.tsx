@@ -18,8 +18,10 @@ import {
   HardDrive,
   AlertCircle,
   Sparkles,
+  Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { StoryboardGrid, parseStoryboardFromText, type StoryboardShot } from "@/components/storyboard-grid";
 import type { BriefResult } from "@/app/api/briefs/[id]/route";
 
 function ScoreRing({ score, label }: { score: number | null; label: string }) {
@@ -185,6 +187,12 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
   const hasScript = brief.script && brief.script.trim().length > 0;
   const hasImagePrompts = brief.imagePrompts && brief.imagePrompts.trim().length > 0;
   const hasVideoPrompts = brief.videoPrompts && brief.videoPrompts.trim().length > 0;
+  
+  // Parse storyboard shots from video prompts if available
+  const storyboardShots: StoryboardShot[] = hasVideoPrompts 
+    ? parseStoryboardFromText(brief.videoPrompts!) 
+    : [];
+  const hasStoryboard = storyboardShots.length > 0;
 
   return (
     <div className="min-h-[calc(100vh-4rem)] py-8 px-4">
@@ -278,6 +286,14 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
               <Video className="w-4 h-4 mr-2" />
               Video Prompts
             </TabsTrigger>
+            <TabsTrigger
+              value="storyboard"
+              className="data-[state=active]:bg-white data-[state=active]:text-[#1A1F36]"
+              disabled={!hasStoryboard}
+            >
+              <Layers className="w-4 h-4 mr-2" />
+              Storyboard
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="script" className="mt-4">
@@ -349,6 +365,39 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
                   <div className="text-center py-12 text-[#1A1F36]/50">
                     <Video className="w-12 h-12 mx-auto mb-3 opacity-30" />
                     <p>No video prompts available yet.</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="storyboard" className="mt-4">
+            <Card className="border-0 shadow-lg bg-[#0f1219]">
+              <CardHeader className="pb-4 border-b border-[#2a3352]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg text-white">Storyboard Grid</CardTitle>
+                    <p className="text-sm text-white/50 mt-1">
+                      {storyboardShots.length} shots with WAN AI prompts
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="px-2 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/30">Wan-T2V</span>
+                      <span className="px-2 py-1 rounded bg-purple-500/10 text-purple-400 border border-purple-500/30">Wan-I2V</span>
+                      <span className="px-2 py-1 rounded bg-orange-500/10 text-orange-400 border border-orange-500/30">Wan-R2V</span>
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                {hasStoryboard ? (
+                  <StoryboardGrid shots={storyboardShots} />
+                ) : (
+                  <div className="text-center py-12 text-white/50">
+                    <Layers className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                    <p>No storyboard available yet.</p>
+                    <p className="text-sm mt-1">Storyboard will appear when video prompts are generated.</p>
                   </div>
                 )}
               </CardContent>
