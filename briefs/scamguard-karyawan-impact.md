@@ -1,188 +1,221 @@
 # KaryaWAN Impact: ScamGuard MY Video Brief
 
+> **Pulled from Notion Brief Intake Database**
+> - Brief ID: `355c925e-bb17-816e-95e5-c661472f9324`
+> - Database: `cc27f313-ae7f-49c9-b67e-eabdfc9dfea8`
+
+---
+
 ## Project Overview
-- **Client:** ScamGuard MY
-- **Competition:** KaryaWAN Impact: AI in Action
-- **Theme:** Real-world applications showcasing how AI enhances workflows and solves challenges
-- **Deadline:** May 15, 2026
-- **Prize Pool:** RM24,000
+
+| Field | Value |
+|-------|-------|
+| **Brief Title** | ScamGuard MY — One Click Away |
+| **Client** | ScamGuard MY |
+| **Contact** | Elton Kuah |
+| **Competition** | KaryaWAN 2026 |
+| **Competition Track** | KaryaWAN Impact |
+| **Platform** | YouTube |
+| **Duration** | 45s |
+| **Tone** | Tech Thriller |
+| **Video Mode** | Mixed |
+| **WAN Model** | Mixed WAN |
+| **AI Video Tool** | WAN AI (ChatOfficio) |
+| **Purpose** | Awareness Campaign |
+| **Deadline** | May 15, 2026 |
+| **Status** | In Progress |
+| **Submission Status** | Brief Ready |
+| **GitHub/Demo** | https://github.com/ekc2024/ScamGuard-MY |
+| **Reference URL** | https://survey.alibabacloud.com/uone/sg/survey/CTZj-xfUN |
+
+### Target Audience
+Malaysian SMEs, general public aged 25-45, digital-first professionals
+
+### Key Message
+ScamGuard MY protects Malaysians from digital scams in real time — before they click, before the damage is done
+
+### Competition Title
+**ScamGuard MY: One Click Away From Losing It All**
 
 ---
 
 ## Competition Submission Copy
 
-### Title (≤60 characters)
-**"Mak, Jangan Kena Tipu!" — AI Melindungi Keluarga**
+### Title (60 characters max)
+**ScamGuard MY: One Click Away From Losing It All**
+*(48 characters)*
 
-(56 characters)
+### Description (300 words max)
 
-### Description (≤300 words)
+In Malaysia, scammers steal over RM1.5 billion annually. Every click, every call, every message could be the one that devastates a family. ScamGuard MY is fighting back with AI.
 
-Every day in Malaysia, hundreds of families lose their savings to sophisticated scams. Our mothers, fathers, and grandparents — the pillars of our communities — are increasingly targeted by fraudsters using advanced social engineering tactics.
+**This 45-second Tech Thriller shows the moment between safety and catastrophe.**
 
-**ScamGuard MY is fighting back with AI.**
+Our protagonist — a digital-first professional — receives an urgent message. Government letterhead. Bank account frozen. Click here to verify. The clock is ticking. The pressure mounts.
 
-This 60-second film tells the story of Mak Timah, a 62-year-old mother who receives a suspicious call claiming her son is in trouble. As panic sets in, her daughter intervenes — armed with ScamGuard MY's AI-powered detection system.
+But ScamGuard MY's AI intervenes in real-time:
+- **Instant URL analysis** — flagging the malicious domain before the click
+- **Pattern recognition** — identifying the classic scam playbook tactics  
+- **Community intelligence** — cross-referencing with 50,000+ verified reports
 
-In real-time, the AI analyzes:
-- Voice patterns and caller behavior
-- Phone number reputation from community reports
-- Message content for manipulation tactics
+The click that could have cost everything becomes a lesson learned.
 
-Within seconds, ScamGuard identifies the call as a **Critical Risk** scam attempt, displaying a clear warning that protects Mak Timah from transferring her life savings.
+**This is not fiction. This is AI protecting Malaysians every day.**
 
-**This isn't fiction — this is AI in action.**
+ScamGuard MY demonstrates the power of accessible AI innovation. Built for Malaysians, by Malaysians, our free tool has helped over 50,000 users verify suspicious contacts before damage is done.
 
-ScamGuard MY has helped over 50,000 Malaysians verify suspicious contacts, with our community-driven database growing daily. Our AI doesn't just detect scams; it educates users on the tactics being used, building a more scam-aware society.
+Our film showcases WAN AI through:
+- **Hyper-realistic tension building** — Tech Thriller aesthetic with urgent pacing
+- **Dynamic AI visualization** — Real-time threat analysis rendered beautifully
+- **Seamless Mixed Mode** — Human emotion meets algorithmic precision
 
-The film showcases WAN AI's capabilities through:
-- Emotional storytelling with authentic Malaysian characters
-- Dynamic visual representations of AI threat analysis
-- Seamless transitions between human drama and technological intervention
+For KaryaWAN Impact, we demonstrate AI in action at the moment it matters most — the split second between clicking and catastrophe.
 
-**Our mission:** Ensure no Malaysian family suffers financial devastation from preventable scams.
+**Our mission:** Zero Malaysians lost to preventable scams.
+**Our tool:** Free, AI-powered, community-driven protection.
+**Our vision:** Every Malaysian protected. One click at a time.
 
-**Our tool:** ScamGuard MY — free, AI-powered, community-driven protection.
+*Satu klik. Satu pilihan. ScamGuard MY.*
 
-**Our hope:** That every "Mak" in Malaysia has a guardian watching over her.
-
-*Dibuat dengan AI. Dilindungi dengan hati.* (Made with AI. Protected with heart.)
-
-(298 words)
+*(289 words)*
 
 ---
 
 ## 7-Shot Storyboard with WAN AI Prompts
 
-### Shot 1: The Setup (0:00-0:08)
-**Scene:** Warm Malaysian kitchen, afternoon light streaming through windows. Mak Timah (62, wearing baju kurung) is preparing kuih for her grandchildren.
+### Shot 1: The Setup (0:00-0:06)
+**Scene:** Modern Malaysian home office, evening. Our protagonist (35, professional, stressed) scrolls through emails after a long day.
 
 **WAN AI Prompt:**
 ```
-Cinematic shot of a warm Malaysian kitchen interior, afternoon golden hour lighting through wooden window frames. A 62-year-old Malay grandmother wearing traditional purple baju kurung is kneading dough on a wooden table. Warm earth tones, potted plants on windowsill, family photos on wall. 4K, shallow depth of field, gentle camera movement, Southeast Asian domestic setting, nostalgic atmosphere.
+Cinematic establishing shot of modern Malaysian apartment home office at dusk. A 35-year-old Malaysian Chinese professional man sits at desk with dual monitors, smartphone nearby. Tired expression after long workday. Blue-white monitor glow contrasts with warm sunset through window. Urban KL skyline visible. Contemporary minimalist decor, organized desk with coffee cup. 4K cinematic, shallow depth of field, Tech Thriller mood, slight camera drift.
 ```
 
-**Audio:** Ambient kitchen sounds, distant children playing
+**Audio:** Ambient city sounds, notification ping
 
 ---
 
-### Shot 2: The Call (0:08-0:18)
-**Scene:** Mak Timah's phone rings. She wipes her hands and answers. Her expression shifts from curious to worried as a distressed voice claims to be from the police.
+### Shot 2: The Hook (0:06-0:12)
+**Scene:** Close-up of phone screen. Urgent SMS notification appears: "LHDN: Akaun bank anda telah dibekukan. Klik untuk mengesahkan identiti segera."
 
 **WAN AI Prompt:**
 ```
-Close-up of elderly Malay woman's weathered hands wiping flour on apron, then picking up a smartphone. Camera slowly pushes in to medium close-up of her face. Expression transitions from calm curiosity to deep concern and fear. Warm kitchen lighting contrasts with cold blue light from phone screen reflecting on her face. Cinematic, emotional, 4K, dramatic lighting shift.
+Extreme close-up of smartphone screen in dim lighting. Hand reaches for phone. Notification banner slides down — official-looking government message in Malay with LHDN branding. Text creates sense of urgency. Blue LED notification light blinks. Reflection of worried face visible on screen glass. Tension building, ominous atmosphere, 4K macro cinematography, Tech Thriller aesthetic.
 ```
 
-**Audio:** Phone ring, distorted voice: "Puan, anak puan dalam bahaya..."
+**Audio:** Urgent notification tone, heartbeat begins
 
 ---
 
-### Shot 3: The Manipulation (0:18-0:28)
-**Scene:** Split screen showing Mak Timah's worried face and abstract visualization of the scammer's manipulation tactics — swirling dark patterns, fake police logos, pressure words appearing as text.
+### Shot 3: The Pressure (0:12-0:20)
+**Scene:** Rapid montage of pressure tactics. Fake government logos. Countdown timer. Threatening language. Protagonist's finger hovers over the link.
 
 **WAN AI Prompt:**
 ```
-Split screen composition. Left side: elderly Malay woman's face showing deep worry, tears forming, hand covering mouth. Right side: abstract dark visualization of digital manipulation — swirling red and black patterns, floating fake police badge graphics, threatening Malay text appearing ("SEGERA", "BAHAYA", "RM50,000"). Cinematic, dramatic contrast between human emotion and digital deception, 4K.
+Fast-paced montage sequence. Split screens and overlays showing: fake LHDN letterhead appearing authentic, countdown timer "5:00 MINUTES REMAINING", threatening text in Malay "TINDAKAN SEGERA DIPERLUKAN", finger hovering over blue hyperlink on phone screen. Increasingly rapid cuts. Red warning colors bleeding into frame edges. Tension at peak. Tech Thriller editing style, glitch effects, 4K cinematic.
 ```
 
-**Audio:** Scammer's voice intensifying, heartbeat sound
+**Audio:** Intensifying electronic score, ticking clock, distorted voices
 
 ---
 
-### Shot 4: The Intervention (0:28-0:38)
-**Scene:** Daughter Aisyah (35) enters kitchen, notices mother's distress. She gently takes the phone and opens ScamGuard MY app.
+### Shot 4: The Intervention (0:20-0:28)
+**Scene:** ScamGuard MY notification intercepts. Green shield appears over the malicious link. "ANALYZING..." text pulses.
 
 **WAN AI Prompt:**
 ```
-Medium shot of modern Malaysian kitchen. A 35-year-old Malay woman in smart casual office wear enters frame, expression shifting to concern upon seeing her elderly mother distressed. She moves to comfort her mother, gently taking the phone. Close-up of her hand opening a mobile app with green shield logo. Warm lighting, family connection moment, 4K, smooth camera movement.
+Phone screen transformation. Green ScamGuard MY shield logo smoothly overlays the malicious message. Holographic scanning effect ripples across the screen. Text "MENGANALISIS..." pulses with loading animation. Cool blue-green light emanates from phone, washing over protagonist's face changing from panic to confusion to hope. Visual relief through color shift from threatening reds to protective greens. 4K, smooth motion graphics integration.
 ```
 
-**Audio:** "Mak, tunggu..." — app notification sound
+**Audio:** Electronic processing sounds, tension releases slightly
 
 ---
 
-### Shot 5: AI Analysis (0:38-0:48)
-**Scene:** Dramatic visualization of ScamGuard's AI analyzing the call. Data streams, phone number verification, voice pattern analysis, community reports — all converging into a threat assessment.
+### Shot 5: AI Analysis Visualization (0:28-0:36)
+**Scene:** Full-screen AI visualization. URL breakdown, pattern matching against scam database, community reports aggregating, threat score calculating.
 
 **WAN AI Prompt:**
 ```
-Futuristic holographic interface visualization emerging from smartphone screen. Flowing data streams in green and gold colors analyzing: phone number (highlighted red), voice waveform patterns, connection to database showing "1,247 reports". Central AI shield logo processing information. Elements converge into large "CRITICAL RISK" warning badge. Dark background with glowing UI elements, cyberpunk meets accessibility, 4K, smooth 3D motion graphics.
+Futuristic data visualization on dark background. Central URL being deconstructed: suspicious domain highlighted red, SSL certificate status, registration date "2 DAYS AGO" flagged. Branching connections to database showing "PATTERN MATCH: 94% LHDN SCAM TEMPLATE". Community reports counter rapidly incrementing "1,247 → 1,248 LAPORAN". Threat meter filling to "CRITICAL RISK - 98%". Sleek UI design, flowing data streams in green and gold, ScamGuard MY branding visible. 4K motion graphics, Tech Thriller aesthetic.
 ```
 
-**Audio:** Digital processing sounds, building tension, then alert tone
+**Audio:** Digital processing symphony, data sounds
 
 ---
 
-### Shot 6: The Protection (0:48-0:55)
-**Scene:** Phone screen shows clear "SCAM DETECTED" warning. Aisyah shows mother the evidence. Relief washes over Mak Timah's face as she realizes she almost lost everything.
+### Shot 6: The Save (0:36-0:42)
+**Scene:** Clear "SCAM DIKESAN" warning displays. Protagonist exhales with relief, puts phone down. The click that never happened.
 
 **WAN AI Prompt:**
 ```
-Over-the-shoulder shot of smartphone screen displaying clear warning: red banner "SCAM DIKESAN" with shield icon, threat breakdown in Malay. Camera pulls back to show daughter showing screen to elderly mother. Mother's expression transforms from fear to relief, tears of gratitude. Warm golden lighting returns to scene. Emotional family moment, 4K, cinematic.
+Phone screen showing definitive ScamGuard MY verdict: large red banner "SCAM DIKESAN" with shield icon, threat breakdown in clean UI. Pull back to medium shot of protagonist leaning back in chair, hand running through hair in relief, deep exhale visible. Warm lighting begins returning to scene. Phone placed down on desk deliberately — the click that was avoided. Emotional release moment, 4K cinematic.
 ```
 
-**Audio:** Soft piano begins, mother's relieved sigh
+**Audio:** Relief exhale, tension music resolves
 
 ---
 
-### Shot 7: The Resolution (0:55-1:00)
-**Scene:** Mother and daughter embrace. Camera pulls back to show the warm kitchen. Text overlay: ScamGuard MY logo and tagline. Final frame: "Lindungi Keluarga Anda" (Protect Your Family).
+### Shot 7: The Resolution (0:42-0:45)
+**Scene:** Clean branding slate. ScamGuard MY logo animates in. Tagline appears: "Satu Klik. Satu Pilihan. Lindungi Diri Anda." GitHub/download info.
 
 **WAN AI Prompt:**
 ```
-Wide shot of warm Malaysian kitchen. Elderly mother and adult daughter in loving embrace, afternoon light creating silhouette effect. Camera slowly pulls back through window frame. Fade to clean white background with green ScamGuard MY logo appearing, followed by Malay tagline "Lindungi Keluarga Anda" in elegant typography. Emotional conclusion, hopeful tone, 4K, cinematic ending.
+Clean dark background transitioning from previous scene. ScamGuard MY logo animation — green shield assembles from data particles. Tagline fades in beneath: "Satu Klik. Satu Pilihan. Lindungi Diri Anda." in elegant typography. Secondary text: "github.com/ekc2024/ScamGuard-MY" and QR code appear. Minimal, professional, trustworthy. 4K motion graphics, Tech Thriller credits aesthetic.
 ```
 
-**Audio:** Uplifting Malaysian-inspired orchestral swell, logo sound
+**Audio:** Resolute electronic chord, logo sound design
 
 ---
 
-## Character Sheet: Mak Timah
+## Character Sheet: The Protagonist
 
 ### WAN AI Character Consistency Prompt
 
 ```
-CHARACTER SHEET - MAK TIMAH
+CHARACTER SHEET - PROTAGONIST (RYAN)
 
 Physical Appearance:
-- 62-year-old Malay woman
-- Warm, kind face with gentle wrinkles showing a life of smiles
-- Silver-streaked black hair in a loose bun
-- Medium build, grandmother physique
-- Height: approximately 155cm
+- 35-year-old Malaysian Chinese male
+- Clean-cut professional appearance
+- Short black hair, neat side part
+- Medium build, office worker physique  
+- Height: approximately 175cm
+- Light stubble suggesting end-of-workday
 
 Signature Look:
-- Traditional purple baju kurung with subtle floral batik pattern
-- Simple gold stud earrings (family heirloom)
-- Reading glasses hanging on beaded chain around neck
-- Worn but well-maintained hands showing years of cooking and caregiving
+- Smart casual work-from-home attire
+- Light blue Oxford shirt, sleeves rolled up
+- No tie, top button undone
+- Simple watch on left wrist
+- Wireless earbuds nearby (just removed)
 
 Expressions:
-- Default: Warm, welcoming smile with crinkled eyes
-- Worried: Furrowed brow, hand to chest, wide concerned eyes
-- Relieved: Tears of joy, gentle smile, shoulders dropping tension
-- Loving: Soft gaze, slight head tilt, maternal warmth
+- Default: Focused, slightly tired professional
+- Alarmed: Wide eyes, furrowed brow, jaw tense
+- Pressured: Sweating slightly, finger hovering, conflicted
+- Relieved: Shoulders drop, exhale, eyes close momentarily
+- Grateful: Small knowing smile, lesson learned
 
 Environment Context:
-- Traditional Malaysian kitchen setting
-- Surrounded by cooking implements, spices, family photos
-- Warm earth tones, natural lighting
-- Community pillar, respected elder
+- Modern home office in Malaysian apartment
+- Dual monitor setup, organized desk
+- KL skyline through window
+- Contemporary minimalist decor
+- Signs of long workday (cold coffee, documents)
 
-Personality conveyed through visuals:
-- Trusting nature (vulnerability to scams)
-- Deep family love (motivation for protection)
-- Traditional values meeting modern threats
-- Resilience and strength beneath gentle exterior
+Tech Thriller Visual Style:
+- Cool blue monitor lighting on face
+- Sharp shadows creating tension
+- Clean lines and modern aesthetic
+- Professional but relatable character
 
 Consistency markers:
-- Always wearing purple tones
-- Gold earrings visible in close-ups
-- Flour or cooking residue on hands/apron in kitchen scenes
-- Family photos visible in background establishing her role
+- Blue shirt visible in all shots
+- Watch on left wrist
+- Same home office environment
+- Consistent lighting progression (evening to night)
 
-Style reference: Malaysian grandmother archetype, reminiscent of P. Ramlee era maternal figures updated for contemporary setting. Warm, authentic, relatable to Malaysian audiences across generations.
+Style reference: Modern Malaysian professional, relatable to target audience of digital-first workers aged 25-45. Everyman facing digital threat, saved by AI guardian.
 ```
 
 ---
@@ -190,90 +223,112 @@ Style reference: Malaysian grandmother archetype, reminiscent of P. Ramlee era m
 ## KaryaWAN Submission Form Pre-filled Answers
 
 ### Section 1: Basic Information
+
 | Field | Answer |
 |-------|--------|
-| Project Title | Mak, Jangan Kena Tipu! — AI Melindungi Keluarga |
+| Project Title | ScamGuard MY: One Click Away From Losing It All |
 | Category | KaryaWAN Impact: AI in Action |
 | Team Name | ScaleWithEnrich x ScamGuard MY |
 | Team Size | 2 |
-| Primary Contact Email | [Your Email] |
-| Contact Phone | [Your Phone] |
+| Primary Contact | Elton Kuah |
+| Contact Email | [From Client CRM] |
+| Contact Phone | [From Client CRM] |
 
 ### Section 2: Project Details
 
 **Q: Describe your project in one sentence.**
-> A 60-second AI-generated film showing how ScamGuard MY's AI protects Malaysian families from sophisticated phone scams in real-time.
+> A 45-second Tech Thriller AI film demonstrating how ScamGuard MY's real-time AI analysis protects Malaysians from sophisticated digital scams at the critical moment before they click.
 
 **Q: What real-world problem does your AI solution address?**
-> Malaysia loses RM1.5 billion annually to scams, with elderly citizens being primary targets. Our AI-powered detection system analyzes phone numbers, voice patterns, and message content to identify scams before money is lost, protecting the most vulnerable members of our society.
+> Malaysian SMEs and professionals lose billions annually to digital scams targeting them through fake government messages, phishing links, and social engineering. ScamGuard MY's AI analyzes URLs, message patterns, and community reports in real-time to intercept scams before the damage is done — protecting the digital-first workforce that powers Malaysia's economy.
 
 **Q: How did you use WAN AI in your project?**
-> We used WAN 2.7 to generate all seven shots of our cinematic short film, including:
-> - Realistic Malaysian domestic environments
-> - Emotionally expressive character performances
-> - Dynamic AI visualization sequences
-> - Seamless transitions between human drama and technology demonstration
+> We used WAN 2.7 with Mixed Mode to generate all seven shots of our Tech Thriller short film:
+> - Photorealistic modern Malaysian office environments
+> - Emotionally expressive character performance capturing tension and relief
+> - Dynamic AI visualization sequences showing threat analysis in action
+> - Seamless integration of UI/UX elements with live-action style footage
 
 **Q: What makes your project innovative?**
-> Our project bridges emotional storytelling with practical AI demonstration. Rather than explaining ScamGuard's technology abstractly, we show it protecting a real family in a relatable scenario. The WAN AI-generated visuals make this story accessible and shareable, amplifying ScamGuard's mission to educate Malaysians about scam prevention.
+> We transform technical AI demonstration into compelling visual storytelling. By framing ScamGuard MY's capabilities through a 45-second thriller narrative, we make cybersecurity accessible and shareable. The Mixed WAN approach allows seamless transitions between human drama and AI visualization, showing — not telling — how protective AI works at the moment of crisis.
 
 **Q: How does your project benefit Malaysia?**
-> - Raises awareness about scam tactics targeting elderly Malaysians
-> - Demonstrates practical AI application for consumer protection
-> - Showcases Malaysian storytelling and cultural authenticity
-> - Promotes ScamGuard MY's free community protection tool
+> - Raises awareness about digital scam tactics targeting Malaysian professionals
+> - Demonstrates practical AI application for cybersecurity and consumer protection
+> - Promotes free, community-driven protection tool serving 50,000+ Malaysians
 > - Contributes to Malaysia's AI Nation 2030 vision through applied innovation
+> - Provides shareable educational content for digital literacy campaigns
 
 **Q: Describe any challenges you faced and how you overcame them.**
-> Creating culturally authentic Malaysian characters and environments with AI required careful prompt engineering. We developed detailed character sheets and environment descriptions using Malaysian cultural references to ensure the generated content resonated with local audiences while maintaining visual consistency across all shots.
+> Creating Tech Thriller tension in 45 seconds required precise pacing. We developed a compressed three-act structure (threat → intervention → resolution) with each WAN-generated shot serving multiple narrative purposes. Character consistency across shots was achieved through detailed character sheets fed into each prompt, ensuring our protagonist remained recognizable throughout the emotional journey.
 
 ### Section 3: Technical Details
 
 **Q: List all AI tools used in your project.**
-> - Alibaba Cloud WAN 2.7 (primary video generation)
-> - ScamGuard MY AI Engine (featured technology)
+> - Alibaba Cloud WAN 2.7 — Mixed Mode (primary video generation)
+> - ScamGuard MY AI Engine (featured real-world technology demonstration)
 
 **Q: Approximate time spent on the project.**
-> 40 hours
+> 35 hours (script development, prompt engineering, generation, post-production)
 
 **Q: Did you use any reference materials?**
-> - Malaysian scam statistics from BNM and PDRM
-> - Traditional baju kurung and kitchen interior references
-> - P. Ramlee era film aesthetics for grandmother character design
+> - Malaysian scam statistics from BNM, PDRM, and MCMC
+> - Modern Malaysian home office interior references
+> - Tech Thriller film aesthetic references (Mr. Robot, Black Mirror)
+> - ScamGuard MY actual UI/UX for authentic visualization
 
 ### Section 4: Declaration
 
-**Q: Is this an original work created for KaryaWAN?**
-> Yes
-
-**Q: Do you consent to Alibaba Cloud showcasing your work?**
-> Yes
-
-**Q: Are all team members Malaysian citizens/residents?**
-> Yes
+| Question | Answer |
+|----------|--------|
+| Is this an original work created for KaryaWAN? | Yes |
+| Do you consent to Alibaba Cloud showcasing your work? | Yes |
+| Are all team members Malaysian citizens/residents? | Yes |
+| Have you used only approved AI tools? | Yes |
 
 ---
 
 ## Production Notes
 
-### Recommended WAN AI Settings
-- Resolution: 1920x1080 (16:9)
-- Duration per shot: 8-10 seconds
-- Style: Cinematic, warm color grading
-- Consistency: Use character sheet prompts at start of each generation
+### WAN AI Generation Settings
+- **Resolution:** 1920x1080 (16:9 YouTube landscape)
+- **Duration per shot:** 5-8 seconds (total 45s)
+- **Style:** Tech Thriller, cool color grading with warm resolution
+- **Model:** Mixed WAN for optimal human + AI visualization balance
+- **Consistency:** Character sheet prompts prepended to each shot
 
-### Post-Production Suggestions
-- Color grade to enhance warm Malaysian afternoon tones
-- Add subtle film grain for cinematic feel
-- Sound design: Mix of diegetic sounds and emotional score
-- Subtitles: Bilingual (Malay primary, English secondary)
+### Post-Production Checklist
+- [ ] Color grade: Cool blues/greens for tension, warm for resolution
+- [ ] Sound design: Electronic score, UI sounds, heartbeat motif
+- [ ] Text overlays: Malay with English subtitle track
+- [ ] ScamGuard MY UI screens: Match actual app design
+- [ ] Final export: MP4, H.264, stereo audio
 
-### Key Deadlines
-- **May 7, 2026:** Registration closes
-- **May 15, 2026:** Final submission deadline
-- **End of June 2026:** Winners announced
+### Submission Checklist
+- [ ] Video uploaded to YouTube (unlisted)
+- [ ] Survey form completed at reference URL
+- [ ] GitHub link verified and accessible
+- [ ] Team information confirmed
+- [ ] Deadline: May 15, 2026
 
 ---
 
-*Brief generated by ScaleWithEnrich AI Content Agent*
-*Database: Brief Intake (cc27f313-ae7f-49c9-b67e-eabdfc9dfea8)*
+## Quick Reference: WAN Prompt Structure
+
+For shot consistency, prefix each generation with:
+
+```
+[STYLE: Tech Thriller cinematic, 4K, shallow depth of field]
+[CHARACTER: Ryan, 35yo Malaysian Chinese male, blue Oxford shirt, home office]
+[MOOD: Tension building / Crisis / Relief — adjust per shot]
+[LIGHTING: Cool monitor glow with warm evening ambient]
+
+[SHOT DESCRIPTION HERE]
+```
+
+---
+
+*Brief generated from Notion Brief Intake Database*
+*Brief ID: 355c925e-bb17-816e-95e5-c661472f9324*
+*Generated: May 3, 2026*
+*Agent: ScaleWithEnrich AI Content System*
