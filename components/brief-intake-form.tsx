@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
-import { CheckCircle2, AlertCircle, ChevronRight, ChevronLeft, Lightbulb, Trophy, Briefcase, Clock, Sparkles, ShoppingBag, Heart, Users, Youtube, Smartphone } from "lucide-react";
+import { CheckCircle2, AlertCircle, ChevronRight, ChevronLeft, Lightbulb, Trophy, Briefcase, Clock, Sparkles, ShoppingBag, Heart, Users, Youtube, Smartphone, FileVideo, ArrowRight } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -449,6 +449,97 @@ function TemplateSelector({
   );
 }
 
+function WelcomeState({ 
+  onTemplateSelect,
+  onStartBlank 
+}: { 
+  onTemplateSelect: (template: BriefTemplate) => void;
+  onStartBlank: () => void;
+}) {
+  return (
+    <div className="text-center">
+      {/* Hero Section */}
+      <div className="mb-10">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#F5A623] to-[#E09000] mb-6 shadow-lg">
+          <FileVideo className="w-8 h-8 text-white" />
+        </div>
+        <h1 className="text-3xl font-bold text-[#1A1F36] tracking-tight mb-3">
+          ScaleWithEnrich
+        </h1>
+        <p className="text-lg text-[#1A1F36]/60 max-w-md mx-auto leading-relaxed">
+          Turn a project idea into a production-ready AI video brief
+        </p>
+      </div>
+
+      {/* Template Cards */}
+      <div className="mb-8">
+        <h3 className="text-sm font-semibold text-[#1A1F36] mb-4">
+          Quick start with a template
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {BRIEF_TEMPLATES.map((template) => {
+            const Icon = template.icon;
+            const PlatformIcon = getPlatformIcon(template.platform);
+            return (
+              <button
+                key={template.id}
+                type="button"
+                onClick={() => onTemplateSelect(template)}
+                className={cn(
+                  "group relative p-4 rounded-xl border-2 text-left transition-all",
+                  "bg-white hover:border-[#F5A623]/50 hover:shadow-lg hover:-translate-y-0.5",
+                  "border-[#1A1F36]/10 focus:outline-none focus:ring-2 focus:ring-[#F5A623]/50"
+                )}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-[#1A1F36]/5 flex items-center justify-center group-hover:bg-[#F5A623]/10 transition-colors">
+                    <Icon className="w-5 h-5 text-[#1A1F36] group-hover:text-[#F5A623] transition-colors" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-semibold text-[#1A1F36] text-sm truncate">
+                        {template.title}
+                      </h4>
+                      {template.isCompetition && (
+                        <Trophy className="w-3.5 h-3.5 text-[#F5A623] flex-shrink-0" />
+                      )}
+                    </div>
+                    <p className="text-xs text-[#1A1F36]/60 mb-2 line-clamp-1">
+                      {template.description}
+                    </p>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1A1F36]/5 text-[10px] font-medium text-[#1A1F36]">
+                        {template.duration}
+                      </span>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#F5A623]/10 text-[10px] font-medium text-[#1A1F36]">
+                        {template.tone}
+                      </span>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1A1F36]/5 text-[10px] font-medium text-[#1A1F36]">
+                        <PlatformIcon className="w-2.5 h-2.5" />
+                        {template.platform}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Start Blank Button */}
+      <button
+        type="button"
+        onClick={onStartBlank}
+        className="inline-flex items-center gap-2 text-sm text-[#1A1F36]/60 hover:text-[#1A1F36] transition-colors"
+      >
+        Or start with a blank brief
+        <ArrowRight className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
 function ModeToggle({ 
   mode, 
   onModeChange 
@@ -665,6 +756,7 @@ function ProgressBar({ currentStep }: { currentStep: number }) {
 export function BriefIntakeForm() {
   const router = useRouter();
   const { showSyncSuccess, setStatus } = useNotionStatus();
+  const [showWelcome, setShowWelcome] = useState(true);
   const [briefMode, setBriefMode] = useState<BriefMode>("commercial");
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -734,8 +826,13 @@ export function BriefIntakeForm() {
       }));
     }
 
-    // Clear any validation errors
+    // Clear any validation errors and show the form
     setErrors({});
+    setShowWelcome(false);
+  };
+
+  const handleStartBlank = () => {
+    setShowWelcome(false);
   };
 
   const validateStep = (step: number): boolean => {
@@ -869,8 +966,23 @@ export function BriefIntakeForm() {
     setCurrentStep(1);
     setSubmitStatus("idle");
     setShowAgentProgress(false);
+    setShowWelcome(true);
     setErrors({});
   };
+
+  // Show welcome state by default
+  if (showWelcome) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto border-0 shadow-lg">
+        <CardContent className="py-12 px-6">
+          <WelcomeState 
+            onTemplateSelect={handleTemplateSelect}
+            onStartBlank={handleStartBlank}
+          />
+        </CardContent>
+      </Card>
+    );
+  }
 
   // Show agent progress indicator while submitting
   if (showAgentProgress && isSubmitting) {
@@ -938,12 +1050,12 @@ export function BriefIntakeForm() {
         <ModeToggle mode={briefMode} onModeChange={setBriefMode} />
         <ProgressBar currentStep={currentStep} />
 
-        {/* Competition Fields - shown when Competition Brief is selected */}
+        {/* Competition Settings - shown when Competition Brief is selected */}
         {briefMode === "competition" && currentStep === 1 && (
           <div className="mb-6 p-5 rounded-xl bg-gradient-to-br from-[#F5A623]/5 to-[#F5A623]/10 border border-[#F5A623]/20 space-y-4">
             <div className="flex items-center gap-2 mb-2">
               <Trophy className="w-5 h-5 text-[#F5A623]" />
-              <h3 className="font-semibold text-[#1A1F36]">Competition Details</h3>
+              <h3 className="font-semibold text-[#1A1F36]">Competition Settings</h3>
             </div>
 
             <div className="space-y-2">
@@ -1122,30 +1234,73 @@ export function BriefIntakeForm() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <ChipSelect
-                label="Platform"
-                options={PLATFORMS}
-                value={formData.platform}
-                onChange={(v) => updateField("platform", v)}
-                required
-              />
-              {errors.platform && (
-                <p className="text-xs text-destructive">{errors.platform}</p>
-              )}
-            </div>
+            {/* Platform, Duration, Tone - Compact Row */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-2">
+                <Label className="text-xs">
+                  Platform <span className="text-destructive">*</span>
+                </Label>
+                <Select
+                  value={formData.platform}
+                  onValueChange={(v) => updateField("platform", v)}
+                >
+                  <SelectTrigger className={cn("bg-background h-9 text-sm", errors.platform && "border-destructive")}>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PLATFORMS.map((p) => (
+                      <SelectItem key={p} value={p}>{p}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.platform && (
+                  <p className="text-[10px] text-destructive">{errors.platform}</p>
+                )}
+              </div>
 
-            <div className="space-y-2">
-              <ChipSelect
-                label="Duration"
-                options={DURATIONS}
-                value={formData.duration}
-                onChange={(v) => updateField("duration", v)}
-                required
-              />
-              {errors.duration && (
-                <p className="text-xs text-destructive">{errors.duration}</p>
-              )}
+              <div className="space-y-2">
+                <Label className="text-xs">
+                  Duration <span className="text-destructive">*</span>
+                </Label>
+                <Select
+                  value={formData.duration}
+                  onValueChange={(v) => updateField("duration", v)}
+                >
+                  <SelectTrigger className={cn("bg-background h-9 text-sm", errors.duration && "border-destructive")}>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DURATIONS.map((d) => (
+                      <SelectItem key={d} value={d}>{d}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.duration && (
+                  <p className="text-[10px] text-destructive">{errors.duration}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs">
+                  Tone <span className="text-destructive">*</span>
+                </Label>
+                <Select
+                  value={formData.tone}
+                  onValueChange={(v) => updateField("tone", v)}
+                >
+                  <SelectTrigger className={cn("bg-background h-9 text-sm", errors.tone && "border-destructive")}>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TONES.map((t) => (
+                      <SelectItem key={t} value={t}>{t}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.tone && (
+                  <p className="text-[10px] text-destructive">{errors.tone}</p>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -1191,19 +1346,6 @@ export function BriefIntakeForm() {
               />
               {errors.targetAudience && (
                 <p className="text-xs text-destructive">{errors.targetAudience}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <ChipSelect
-                label="Tone"
-                options={TONES}
-                value={formData.tone}
-                onChange={(v) => updateField("tone", v)}
-                required
-              />
-              {errors.tone && (
-                <p className="text-xs text-destructive">{errors.tone}</p>
               )}
             </div>
 

@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StoryboardGrid, parseStoryboardFromText, type StoryboardShot } from "@/components/storyboard-grid";
+import { WanTestPanel } from "@/components/wan-test-panel";
 import type { BriefResult } from "@/app/api/briefs/[id]/route";
 
 function ScoreRing({ score, label }: { score: number | null; label: string }) {
@@ -627,9 +628,12 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
                     <p>No storyboard available yet.</p>
                     <p className="text-sm mt-1">Storyboard will appear when video prompts are generated.</p>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+)}
+  </CardContent>
+  </Card>
+
+            {/* WAN Test Panel */}
+            <WanTestPanel />
           </TabsContent>
         </Tabs>
 
