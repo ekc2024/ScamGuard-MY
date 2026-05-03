@@ -1050,12 +1050,12 @@ export function BriefIntakeForm() {
         <ModeToggle mode={briefMode} onModeChange={setBriefMode} />
         <ProgressBar currentStep={currentStep} />
 
-        {/* Competition Fields - shown when Competition Brief is selected */}
+        {/* Competition Settings - shown when Competition Brief is selected */}
         {briefMode === "competition" && currentStep === 1 && (
           <div className="mb-6 p-5 rounded-xl bg-gradient-to-br from-[#F5A623]/5 to-[#F5A623]/10 border border-[#F5A623]/20 space-y-4">
             <div className="flex items-center gap-2 mb-2">
               <Trophy className="w-5 h-5 text-[#F5A623]" />
-              <h3 className="font-semibold text-[#1A1F36]">Competition Details</h3>
+              <h3 className="font-semibold text-[#1A1F36]">Competition Settings</h3>
             </div>
 
             <div className="space-y-2">
@@ -1234,30 +1234,73 @@ export function BriefIntakeForm() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <ChipSelect
-                label="Platform"
-                options={PLATFORMS}
-                value={formData.platform}
-                onChange={(v) => updateField("platform", v)}
-                required
-              />
-              {errors.platform && (
-                <p className="text-xs text-destructive">{errors.platform}</p>
-              )}
-            </div>
+            {/* Platform, Duration, Tone - Compact Row */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-2">
+                <Label className="text-xs">
+                  Platform <span className="text-destructive">*</span>
+                </Label>
+                <Select
+                  value={formData.platform}
+                  onValueChange={(v) => updateField("platform", v)}
+                >
+                  <SelectTrigger className={cn("bg-background h-9 text-sm", errors.platform && "border-destructive")}>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PLATFORMS.map((p) => (
+                      <SelectItem key={p} value={p}>{p}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.platform && (
+                  <p className="text-[10px] text-destructive">{errors.platform}</p>
+                )}
+              </div>
 
-            <div className="space-y-2">
-              <ChipSelect
-                label="Duration"
-                options={DURATIONS}
-                value={formData.duration}
-                onChange={(v) => updateField("duration", v)}
-                required
-              />
-              {errors.duration && (
-                <p className="text-xs text-destructive">{errors.duration}</p>
-              )}
+              <div className="space-y-2">
+                <Label className="text-xs">
+                  Duration <span className="text-destructive">*</span>
+                </Label>
+                <Select
+                  value={formData.duration}
+                  onValueChange={(v) => updateField("duration", v)}
+                >
+                  <SelectTrigger className={cn("bg-background h-9 text-sm", errors.duration && "border-destructive")}>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DURATIONS.map((d) => (
+                      <SelectItem key={d} value={d}>{d}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.duration && (
+                  <p className="text-[10px] text-destructive">{errors.duration}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs">
+                  Tone <span className="text-destructive">*</span>
+                </Label>
+                <Select
+                  value={formData.tone}
+                  onValueChange={(v) => updateField("tone", v)}
+                >
+                  <SelectTrigger className={cn("bg-background h-9 text-sm", errors.tone && "border-destructive")}>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TONES.map((t) => (
+                      <SelectItem key={t} value={t}>{t}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.tone && (
+                  <p className="text-[10px] text-destructive">{errors.tone}</p>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -1303,19 +1346,6 @@ export function BriefIntakeForm() {
               />
               {errors.targetAudience && (
                 <p className="text-xs text-destructive">{errors.targetAudience}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <ChipSelect
-                label="Tone"
-                options={TONES}
-                value={formData.tone}
-                onChange={(v) => updateField("tone", v)}
-                required
-              />
-              {errors.tone && (
-                <p className="text-xs text-destructive">{errors.tone}</p>
               )}
             </div>
 
