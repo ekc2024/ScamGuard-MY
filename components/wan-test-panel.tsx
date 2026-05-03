@@ -14,15 +14,18 @@ import { cn } from "@/lib/utils";
 import { Play, Copy, Check, Loader2, AlertTriangle, Sparkles } from "lucide-react";
 
 const AVAILABLE_SHOTS = [
-  { value: "1", label: "Shot 1 — Opening Hook (5s)" },
-  { value: "5", label: "Shot 5 — Data Moment (8s)" },
-  { value: "7", label: "Shot 7 — Title Card (5s)" },
+  { value: "wan-1", label: "WAN 2.6 — Shot 1: Opening Hook (5s)", model: "wan" },
+  { value: "wan-5", label: "WAN 2.6 — Shot 5: Data Moment (8s)", model: "wan" },
+  { value: "wan-7", label: "WAN 2.6 — Shot 7: Title Card (5s)", model: "wan" },
+  { value: "ltx-2", label: "LTX-2 — Shot 2: Character Intro (6s)", model: "ltx" },
 ];
 
 type GenerationStatus = "idle" | "sending" | "processing" | "completed" | "error";
 
 export function WanTestPanel() {
-  const [selectedShot, setSelectedShot] = useState("1");
+  const [selectedShot, setSelectedShot] = useState("wan-1");
+  const selectedShotData = AVAILABLE_SHOTS.find(s => s.value === selectedShot);
+  const isLtxSelected = selectedShotData?.model === "ltx";
   const [status, setStatus] = useState<GenerationStatus>("idle");
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +50,7 @@ export function WanTestPanel() {
       const response = await fetch("/api/test-wan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shotNumber: selectedShot }),
+        body: JSON.stringify({ shotId: selectedShot }),
       });
 
       const data = await response.json();
@@ -58,10 +61,11 @@ export function WanTestPanel() {
 
       if (data.status === "queued" && data.requestId) {
         setStatus("processing");
+        const model = data.model || "wan";
         // Start polling
         pollIntervalRef.current = setInterval(async () => {
           try {
-            const pollResponse = await fetch(`/api/test-wan?requestId=${data.requestId}`);
+            const pollResponse = await fetch(`/api/test-wan?requestId=${data.requestId}&model=${model}`);
             const pollData = await pollResponse.json();
 
             if (pollData.status === "completed" && pollData.videoUrl) {
@@ -107,7 +111,7 @@ export function WanTestPanel() {
       case "sending":
         return "Sending prompt to fal.ai...";
       case "processing":
-        return "WAN 2.6 processing...";
+        return isLtxSelected ? "LTX-2 processing..." : "WAN 2.6 processing...";
       case "completed":
         return "Clip ready";
       case "error":
@@ -136,7 +140,8 @@ export function WanTestPanel() {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Shot selector and generate button */}
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="space-y-2">
+          <div className="flex flex-col sm:flex-row gap-3">
           <Select value={selectedShot} onValueChange={setSelectedShot}>
             <SelectTrigger className="flex-1 bg-white border-orange-200">
               <SelectValue placeholder="Select a shot" />
@@ -163,10 +168,16 @@ export function WanTestPanel() {
             ) : (
               <>
                 <Play className="w-4 h-4 mr-2" />
-                Generate with WAN
+                Generate with {isLtxSelected ? "LTX-2" : "WAN"}
               </>
             )}
           </Button>
+          </div>
+          {isLtxSelected && (
+            <p className="text-[11px] text-orange-600/80 hidden sm:block">
+              LTX-2 is for testing only — not eligible for KaryaWAN
+            </p>
+          )}
         </div>
 
         {/* Status indicator */}
