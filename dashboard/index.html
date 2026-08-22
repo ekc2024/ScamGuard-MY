@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VendorGuard AI — AP Automation Dashboard</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-purple: #8b5cf6;
+            --border: #334155;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 32px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-blocked {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .two-thirds {
+            grid-column: span 2;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title .icon {
+            font-size: 16px;
+        }
+
+        /* Risk Gauge */
+        .risk-gauge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .risk-gauge {
+            position: relative;
+            width: 200px;
+            height: 100px;
+            overflow: hidden;
+        }
+
+        .risk-gauge-bg {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--accent-green) 0deg 72deg,
+                var(--accent-yellow) 72deg 144deg,
+                var(--accent-red) 144deg 180deg,
+                transparent 180deg 360deg
+            );
+            position: relative;
+        }
+
+        .risk-gauge-bg::after {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: var(--bg-card);
+        }
+
+        .risk-needle {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 4px;
+            height: 70px;
+            background: var(--text-primary);
+            transform-origin: bottom center;
+            transform: translateX(-50%) rotate(54deg);
+            border-radius: 2px;
+            transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .risk-score-display {
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .risk-score-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--accent-red);
+            line-height: 1;
+        }
+
+        .risk-score-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .risk-level-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+            margin-top: 8px;
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Pipeline Flow */
+        .pipeline-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            overflow-x: auto;
+        }
+
+        .pipeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 90px;
+        }
+
+        .pipeline-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .pipeline-icon.completed {
+            background: rgba(16, 185, 129, 0.15);
+            border: 2px solid var(--accent-green);
+        }
+
+        .pipeline-icon.completed::after {
+            content: '✓';
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 16px;
+            height: 16px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .pipeline-icon.alert {
+            background: rgba(239, 68, 68, 0.15);
+            border: 2px solid var(--accent-red);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3); }
+            50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+        }
+
+        .pipeline-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 80px;
+        }
+
+        .pipeline-arrow {
+            color: var(--text-muted);
+            font-size: 18px;
+            margin: 0 4px;
+            margin-bottom: 24px;
+        }
+
+        /* Findings Table */
+        .findings-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .findings-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .findings-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .findings-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .severity-critical {
+            color: var(--accent-red);
+            font-weight: 600;
+        }
+
+        .severity-high {
+            color: var(--accent-yellow);
+            font-weight: 600;
+        }
+
+        .severity-medium {
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        .points-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .points-critical { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+        .points-high { background: rgba(245, 158, 11, 0.15); color: var(--accent-yellow); }
+        .points-medium { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
+
+        /* Document Map */
+        .doc-map {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .doc-node {
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-size: 12px;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .doc-node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .doc-node-type {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .doc-node-name {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .doc-node-detail {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .doc-node.supplier { border-left: 3px solid var(--accent-purple); }
+        .doc-node.po { border-left: 3px solid var(--accent-blue); }
+        .doc-node.invoice { border-left: 3px solid var(--accent-yellow); }
+        .doc-node.delivery { border-left: 3px solid var(--accent-green); }
+        .doc-node.receipt { border-left: 3px solid var(--accent-cyan); }
+        .doc-node.alert { border-left: 3px solid var(--accent-red); }
+
+        /* Transaction Summary */
+        .txn-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .txn-field {
+            padding: 12px;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .txn-field-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .txn-field-value {
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .txn-field.danger {
+            background: rgba(239, 68, 68, 0.05);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .txn-field.danger .txn-field-value {
+            color: var(--accent-red);
+        }
+
+        /* Action Buttons */
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .btn-danger {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-card-hover);
+        }
+
+        /* Timeline */
+        .timeline {
+            padding-left: 20px;
+            border-left: 2px solid var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 12px 0 12px 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -7px;
+            top: 18px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            border: 2px solid var(--bg-card);
+        }
+
+        .timeline-item.active::before {
+            background: var(--accent-red);
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+        }
+
+        .timeline-time {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .timeline-text {
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        /* PDPA Badge */
+        .pdpa-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            font-size: 11px;
+            color: var(--accent-green);
+            margin-top: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .two-thirds {
+                grid-column: span 2;
+            }
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .two-thirds {
+                grid-column: span 1;
+            }
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            .doc-map {
+                grid-template-columns: 1fr 1fr;
+            }
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .slide-up {
+            animation: slideUp 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header fade-in">
+            <div class="header-left">
+                <div class="logo">🛡️</div>
+                <div>
+                    <h1>VendorGuard AI</h1>
+                    <p>Multi-Document AP Automation • Risk Assessment Dashboard</p>
+                </div>
+            </div>
+            <span class="status-badge status-blocked">🚨 Payment Blocked</span>
+        </header>
+
+        <!-- Stats Row -->
+        <div class="stats-row slide-up" style="animation-delay: 0.1s">
+            <div class="stat-card">
+                <div class="stat-value" style="color: var(--accent-blue)">6</div>
+                <div class="stat-label">Documents Processed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color: var(--accent-red)">70/100</div>
+                <div class="stat-label">Risk Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color: var(--accent-yellow)">5</div>
+                <div class="stat-label">Control Failures</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color: var(--accent-green)">RM 11,188.80</div>
+                <div class="stat-label">Transaction Amount</div>
+            </div>
+        </div>
+
+        <!-- Pipeline Flow -->
+        <div class="card full-width slide-up" style="animation-delay: 0.2s">
+            <div class="card-title"><span class="icon">⚙️</span> Pipeline Execution Flow</div>
+            <div class="pipeline-flow">
+                <div class="pipeline-step">
+                    <div class="pipeline-icon completed">📥</div>
+                    <div class="pipeline-label">Batch Ingest</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon completed">🏷️</div>
+                    <div class="pipeline-label">Classify</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon completed">📋</div>
+                    <div class="pipeline-label">Extract Fields</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon completed">🏢</div>
+                    <div class="pipeline-label">Resolve Supplier</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon completed">🔗</div>
+                    <div class="pipeline-label">Link Docs</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon completed">🔍</div>
+                    <div class="pipeline-label">Control Checks</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon completed">📊</div>
+                    <div class="pipeline-label">Risk Score</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon alert">🛑</div>
+                    <div class="pipeline-label">Human Review</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="dashboard-grid">
+            <!-- Risk Gauge -->
+            <div class="card slide-up" style="animation-delay: 0.3s">
+                <div class="card-title"><span class="icon">🎯</span> Risk Assessment</div>
+                <div class="risk-gauge-container">
+                    <div class="risk-gauge">
+                        <div class="risk-gauge-bg"></div>
+                        <div class="risk-needle" id="riskNeedle"></div>
+                    </div>
+                    <div class="risk-score-display">
+                        <div class="risk-score-number" id="riskScore">0</div>
+                        <div class="risk-score-label">out of 100</div>
+                        <div class="risk-level-badge">HIGH RISK</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction Details -->
+            <div class="card two-thirds slide-up" style="animation-delay: 0.35s">
+                <div class="card-title"><span class="icon">💰</span> Transaction Summary</div>
+                <div class="txn-summary">
+                    <div class="txn-field">
+                        <div class="txn-field-label">Transaction ID</div>
+                        <div class="txn-field-value">TXN-2026-0108</div>
+                    </div>
+                    <div class="txn-field">
+                        <div class="txn-field-label">Supplier</div>
+                        <div class="txn-field-value">Nexa Office Solutions (SUP-001)</div>
+                    </div>
+                    <div class="txn-field">
+                        <div class="txn-field-label">Invoice</div>
+                        <div class="txn-field-value">INV-2026-0182</div>
+                    </div>
+                    <div class="txn-field">
+                        <div class="txn-field-label">Purchase Order</div>
+                        <div class="txn-field-value">PO-2026-0108</div>
+                    </div>
+                    <div class="txn-field">
+                        <div class="txn-field-label">Verified Account</div>
+                        <div class="txn-field-value">********4321 ✅</div>
+                    </div>
+                    <div class="txn-field danger">
+                        <div class="txn-field-label">Requested Account</div>
+                        <div class="txn-field-value">********6789 ⚠️ MISMATCH</div>
+                    </div>
+                </div>
+                <div class="pdpa-badge">
+                    🔒 PDPA Compliant — Bank accounts masked, no PII stored
+                </div>
+            </div>
+
+            <!-- Findings Table -->
+            <div class="card full-width slide-up" style="animation-delay: 0.4s">
+                <div class="card-title"><span class="icon">⚠️</span> Risk Findings</div>
+                <table class="findings-table">
+                    <thead>
+                        <tr>
+                            <th>Finding</th>
+                            <th>Severity</th>
+                            <th>Points</th>
+                            <th>Evidence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🚨 Bank Account Mismatch</td>
+                            <td class="severity-critical">CRITICAL</td>
+                            <td><span class="points-badge points-critical">+20</span></td>
+                            <td>Verified account (***4321) ≠ Invoice/Receipt account (***6789)</td>
+                        </tr>
+                        <tr>
+                            <td>⚠️ Duplicate Invoice</td>
+                            <td class="severity-high">HIGH</td>
+                            <td><span class="points-badge points-high">+15</span></td>
+                            <td>Two different PDFs both claim INV-2026-0182 with different file hashes</td>
+                        </tr>
+                        <tr>
+                            <td>⚠️ Payment Status Conflict</td>
+                            <td class="severity-high">HIGH</td>
+                            <td><span class="points-badge points-high">+15</span></td>
+                            <td>Invoices say UNPAID; payment receipt shows SETTLED</td>
+                        </tr>
+                        <tr>
+                            <td>⚠️ Missing PO Reference</td>
+                            <td class="severity-medium">MEDIUM</td>
+                            <td><span class="points-badge points-medium">+10</span></td>
+                            <td>Invoices omit PO despite delivery order linking PO-2026-0108 ↔ INV-2026-0182</td>
+                        </tr>
+                        <tr>
+                            <td>⚠️ Overdue Invoice</td>
+                            <td class="severity-medium">MEDIUM</td>
+                            <td><span class="points-badge points-medium">+10</span></td>
+                            <td>Due 15 Aug 2026, now 7 days overdue, still marked UNPAID</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Document Map -->
+            <div class="card two-thirds slide-up" style="animation-delay: 0.45s">
+                <div class="card-title"><span class="icon">📄</span> Document Map (6 PDFs Processed)</div>
+                <div class="doc-map">
+                    <div class="doc-node supplier">
+                        <div class="doc-node-type">Supplier Profile</div>
+                        <div class="doc-node-name">SUP-001</div>
+                        <div class="doc-node-detail">Nexa Office Solutions<br>Verified Acc: ***4321</div>
+                    </div>
+                    <div class="doc-node po">
+                        <div class="doc-node-type">Purchase Order</div>
+                        <div class="doc-node-name">PO-2026-0108</div>
+                        <div class="doc-node-detail">RM 11,188.80<br>Approved 29 Jul 2026</div>
+                    </div>
+                    <div class="doc-node invoice">
+                        <div class="doc-node-type">Original Invoice</div>
+                        <div class="doc-node-name">INV-2026-0182</div>
+                        <div class="doc-node-detail">Due: 15 Aug 2026<br>Status: UNPAID</div>
+                    </div>
+                    <div class="doc-node alert">
+                        <div class="doc-node-type">⚠️ Reissued Invoice</div>
+                        <div class="doc-node-name">INV-2026-0182</div>
+                        <div class="doc-node-detail">Reissued 5 Aug 2026<br>Different hash!</div>
+                    </div>
+                    <div class="doc-node delivery">
+                        <div class="doc-node-type">Delivery Order</div>
+                        <div class="doc-node-name">DO-2026-0097</div>
+                        <div class="doc-node-detail">Delivered 4 Aug 2026<br>Links PO + Invoice</div>
+                    </div>
+                    <div class="doc-node receipt">
+                        <div class="doc-node-type">Payment Receipt</div>
+                        <div class="doc-node-name">PAY-2026-0255</div>
+                        <div class="doc-node-detail">RM 11,188.80<br>Status: SETTLED</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="card slide-up" style="animation-delay: 0.5s">
+                <div class="card-title"><span class="icon">📅</span> Audit Timeline</div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-time">15 Jul 2026</div>
+                        <div class="timeline-text">Supplier account verified (***4321)</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">28 Jul 2026</div>
+                        <div class="timeline-text">PO-2026-0108 approved</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">1 Aug 2026</div>
+                        <div class="timeline-text">Invoice INV-2026-0182 issued</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">4 Aug 2026</div>
+                        <div class="timeline-text">Delivery confirmed (DO-2026-0097)</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">5 Aug 2026</div>
+                        <div class="timeline-text">Invoice reissued (different layout)</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">10 Aug 2026</div>
+                        <div class="timeline-text">Payment to unverified account (***6789)</div>
+                    </div>
+                    <div class="timeline-item active">
+                        <div class="timeline-time">22 Aug 2026</div>
+                        <div class="timeline-text"><strong>VendorGuard AI: BLOCKED</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card full-width slide-up" style="animation-delay: 0.55s">
+                <div class="card-title"><span class="icon">🎬</span> Recommended Actions</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                    <div style="padding: 16px; background: rgba(239, 68, 68, 0.05); border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.2);">
+                        <div style="font-size: 13px; font-weight: 600; color: var(--accent-red); margin-bottom: 8px;">1. Block Payment</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Do NOT process any additional payment until bank account is verified through approved channel</div>
+                    </div>
+                    <div style="padding: 16px; background: rgba(245, 158, 11, 0.05); border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.2);">
+                        <div style="font-size: 13px; font-weight: 600; color: var(--accent-yellow); margin-bottom: 8px;">2. Verify Account</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Contact Farah Lim (finance@nexaoffice.example) to confirm bank account change from ***4321 to ***6789</div>
+                    </div>
+                    <div style="padding: 16px; background: rgba(59, 130, 246, 0.05); border-radius: 10px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                        <div style="font-size: 13px; font-weight: 600; color: var(--accent-blue); margin-bottom: 8px;">3. Escalate</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">If unresolved within 24hrs, escalate to Finance Manager (Daniel Wong) for approval</div>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-danger" onclick="alert('Payment blocked. Audit event logged.')">🛑 Block Payment</button>
+                    <button class="btn btn-success" onclick="alert('Verification request sent to supplier.')">✅ Request Verification</button>
+                    <button class="btn btn-outline" onclick="alert('Full audit trail exported.')">📋 Export Audit Log</button>
+                    <button class="btn btn-outline" onclick="alert('Case escalated to Finance Manager.')">⬆️ Escalate</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 32px 0; border-top: 1px solid var(--border); margin-top: 16px;">
+            <p style="font-size: 12px; color: var(--text-muted);">
+                VendorGuard AI • Built on ScamGuard-MY Credit Analyzer v3.0 • PDPA Compliant<br>
+                <a href="https://github.com/ekc2024/ScamGuard-MY" style="color: var(--accent-blue); text-decoration: none;">github.com/ekc2024/ScamGuard-MY</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Animate risk score counter
+        function animateCounter(element, target, duration = 1500) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            function update() {
+                start += increment;
+                if (start >= target) {
+                    element.textContent = target;
+                    return;
+                }
+                element.textContent = Math.floor(start);
+                requestAnimationFrame(update);
+            }
+            setTimeout(update, 800);
+        }
+
+        // Animate needle
+        function animateNeedle() {
+            const needle = document.getElementById('riskNeedle');
+            // 70/100 = 70% of 180deg = 126deg, offset by -90
+            setTimeout(() => {
+                needle.style.transform = 'translateX(-50%) rotate(54deg)';
+            }, 500);
+        }
+
+        // Init
+        window.addEventListener('load', () => {
+            const scoreEl = document.getElementById('riskScore');
+            animateCounter(scoreEl, 70);
+            animateNeedle();
+        });
+    </script>
+</body>
+</html>
