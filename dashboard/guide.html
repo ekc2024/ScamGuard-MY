@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VendorGuard AI — Upload Guide</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --bg-white: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --text-muted: #94a3b8;
+            --accent: #2563eb;
+            --accent-light: #dbeafe;
+            --green: #059669;
+            --green-light: #d1fae5;
+            --yellow: #d97706;
+            --yellow-light: #fef3c7;
+            --red: #dc2626;
+            --red-light: #fee2e2;
+            --purple: #7c3aed;
+            --purple-light: #ede9fe;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.04);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 48px 24px;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 48px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .hero-icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            color: var(--text-light);
+            margin-bottom: 24px;
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .card h3 {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Steps */
+        .steps {
+            counter-reset: step;
+        }
+
+        .step {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 28px 28px 28px 80px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .step::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 24px;
+            top: 28px;
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .step h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .step p {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .step .hint {
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: var(--accent-light);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--accent);
+        }
+
+        /* What We Check */
+        .check-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 16px;
+            background: var(--bg-white);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .check-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .check-text h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .check-text p {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* Risk levels */
+        .risk-levels {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .risk-card {
+            padding: 24px;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .risk-card.low {
+            background: var(--green-light);
+            border: 1px solid rgba(5, 150, 105, 0.2);
+        }
+
+        .risk-card.medium {
+            background: var(--yellow-light);
+            border: 1px solid rgba(217, 119, 6, 0.2);
+        }
+
+        .risk-card.high {
+            background: var(--red-light);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+        }
+
+        .risk-score {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .risk-card.low .risk-score { color: var(--green); }
+        .risk-card.medium .risk-score { color: var(--yellow); }
+        .risk-card.high .risk-score { color: var(--red); }
+
+        .risk-label {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .risk-card.low .risk-label { color: var(--green); }
+        .risk-card.medium .risk-label { color: var(--yellow); }
+        .risk-card.high .risk-label { color: var(--red); }
+
+        .risk-desc {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 8px;
+        }
+
+        /* Examples */
+        .example-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .example-table th {
+            background: #f1f5f9;
+            padding: 14px 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            text-align: left;
+        }
+
+        .example-table td {
+            padding: 14px 20px;
+            font-size: 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        .file-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .file-badge.pdf { background: #fee2e2; color: #b91c1c; }
+        .file-badge.excel { background: #d1fae5; color: #065f46; }
+
+        /* CTA */
+        .cta {
+            text-align: center;
+            padding: 40px;
+            background: var(--bg-white);
+            border-radius: 16px;
+            border: 2px solid var(--accent-light);
+            margin-top: 48px;
+        }
+
+        .cta h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .cta p {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            margin-left: 12px;
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        /* FAQ */
+        .faq-item {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 20px 24px;
+            border: 1px solid var(--border);
+            margin-bottom: 12px;
+        }
+
+        .faq-item h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .faq-item p {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 32px 0;
+            margin-top: 48px;
+            border-top: 1px solid var(--border);
+        }
+
+        footer p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .check-list { grid-template-columns: 1fr; }
+            .risk-levels { grid-template-columns: 1fr; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero -->
+        <div class="hero">
+            <div class="hero-icon">🛡️</div>
+            <h1>VendorGuard AI</h1>
+            <p>Upload your finance documents. We'll check them for fraud, errors, and compliance issues — automatically.</p>
+        </div>
+
+        <!-- What Documents to Upload -->
+        <div class="section">
+            <h2 class="section-title">📄 What Documents Can I Upload?</h2>
+            <p class="section-subtitle">Upload any of these common AP (Accounts Payable) documents:</p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon">🏢</div>
+                    <h3>Supplier Profiles</h3>
+                    <p>Vendor master records with company details, verified bank accounts, and contact info</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📋</div>
+                    <h3>Purchase Orders (PO)</h3>
+                    <p>Approved purchase orders showing what was ordered, quantities, and approved amounts</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🧾</div>
+                    <h3>Invoices</h3>
+                    <p>Tax invoices from suppliers — including original and reissued copies</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🚚</div>
+                    <h3>Delivery Orders</h3>
+                    <p>Proof of delivery confirming goods were received</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💳</div>
+                    <h3>Payment Receipts</h3>
+                    <p>Bank transfer confirmations or payment acknowledgments</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <h3>Excel Reports</h3>
+                    <p>AP aging reports, transaction logs, payment schedules, vendor lists</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Supported Formats -->
+        <div class="section">
+            <h2 class="section-title">📁 Supported File Types</h2>
+            <p class="section-subtitle">We accept these common file formats:</p>
+
+            <table class="example-table">
+                <thead>
+                    <tr>
+                        <th>Format</th>
+                        <th>Examples</th>
+                        <th>What We Do</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="file-badge pdf">PDF</span></td>
+                        <td>Invoice.pdf, PO-2026.pdf, Receipt.pdf</td>
+                        <td>Full fraud & risk analysis (8 automated checks)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="file-badge excel">XLSX</span></td>
+                        <td>AP_Report.xlsx, Payments.xlsx</td>
+                        <td>Data scan, duplicate detection, financial column analysis</td>
+                    </tr>
+                    <tr>
+                        <td><span class="file-badge excel">XLS</span></td>
+                        <td>Vendor_List.xls, Aging.xls</td>
+                        <td>Same as XLSX (older Excel format)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- How to Upload -->
+        <div class="section">
+            <h2 class="section-title">⬆️ How to Upload (3 Easy Steps)</h2>
+            <p class="section-subtitle">Choose the method that works best for you:</p>
+
+            <div class="steps">
+                <div class="step">
+                    <h3>Go to the Upload Folder on GitHub</h3>
+                    <p>Open your web browser and go to the <strong>sample-uploads</strong> folder in our GitHub repository.</p>
+                    <div class="hint">💡 Link: github.com/ekc2024/ScamGuard-MY → sample-uploads folder</div>
+                </div>
+                <div class="step">
+                    <h3>Click "Add file" → "Upload files"</h3>
+                    <p>You'll see a button at the top of the page. Click it and drag your PDF or Excel files into the upload area.</p>
+                    <div class="hint">💡 You can upload multiple files at once!</div>
+                </div>
+                <div class="step">
+                    <h3>Click "Commit changes" to Save</h3>
+                    <p>Scroll down and click the green "Commit changes" button. Your files are now ready for analysis!</p>
+                    <div class="hint">💡 Then open the notebook in Colab and run Step 5 to see the results.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- What We Check -->
+        <div class="section">
+            <h2 class="section-title">🔍 What Gets Analyzed?</h2>
+            <p class="section-subtitle">VendorGuard AI automatically checks for these common fraud and compliance issues:</p>
+
+            <div class="check-list">
+                <div class="check-item">
+                    <div class="check-icon">🏦</div>
+                    <div class="check-text">
+                        <h4>Bank Account Mismatch</h4>
+                        <p>Does the invoice bank account match the verified supplier account?</p>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-icon">📑</div>
+                    <div class="check-text">
+                        <h4>Duplicate Invoices</h4>
+                        <p>Are there two invoices with the same number? (could mean double payment)</p>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-icon">⚡</div>
+                    <div class="check-text">
+                        <h4>Payment Conflicts</h4>
+                        <p>Does the invoice say "unpaid" but a receipt says "settled"?</p>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-icon">🔗</div>
+                    <div class="check-text">
+                        <h4>Missing PO Reference</h4>
+                        <p>Does the invoice reference the approved purchase order?</p>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-icon">⏰</div>
+                    <div class="check-text">
+                        <h4>Overdue Invoices</h4>
+                        <p>Is the invoice past its due date? (pressure tactic?)</p>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-icon">👤</div>
+                    <div class="check-text">
+                        <h4>Supplier Identity</h4>
+                        <p>Do all documents refer to the same verified supplier?</p>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-icon">💰</div>
+                    <div class="check-text">
+                        <h4>Amount Consistency</h4>
+                        <p>Do amounts match across PO, invoice, delivery, and receipt?</p>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-icon">🔒</div>
+                    <div class="check-text">
+                        <h4>PDPA Compliance</h4>
+                        <p>All bank accounts are automatically masked for data protection.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Levels -->
+        <div class="section">
+            <h2 class="section-title">🎯 Understanding the Risk Score</h2>
+            <p class="section-subtitle">After analysis, you'll get a score from 0 to 100:</p>
+
+            <div class="risk-levels">
+                <div class="risk-card low">
+                    <div class="risk-score">0–29</div>
+                    <div class="risk-label">Low Risk</div>
+                    <div class="risk-desc">Documents look good. Safe to process payment.</div>
+                </div>
+                <div class="risk-card medium">
+                    <div class="risk-score">30–49</div>
+                    <div class="risk-label">Medium Risk</div>
+                    <div class="risk-desc">Minor issues found. Review before processing.</div>
+                </div>
+                <div class="risk-card high">
+                    <div class="risk-score">50–100</div>
+                    <div class="risk-label">High Risk</div>
+                    <div class="risk-desc">Significant issues. Payment should be blocked until verified.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example Scenario -->
+        <div class="section">
+            <h2 class="section-title">💡 Example: What a Typical Analysis Looks Like</h2>
+            <p class="section-subtitle">Upload 6 documents from one transaction and see:</p>
+
+            <table class="example-table">
+                <thead>
+                    <tr>
+                        <th>Document</th>
+                        <th>What System Finds</th>
+                        <th>Risk?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Supplier Profile</td>
+                        <td>Verified bank account: ***4321</td>
+                        <td style="color: var(--green);">✅ OK</td>
+                    </tr>
+                    <tr>
+                        <td>Purchase Order</td>
+                        <td>Approved amount: RM 11,188.80</td>
+                        <td style="color: var(--green);">✅ OK</td>
+                    </tr>
+                    <tr>
+                        <td>Invoice</td>
+                        <td>Bank account: ***6789 (different from verified!)</td>
+                        <td style="color: var(--red);">🚨 Alert</td>
+                    </tr>
+                    <tr>
+                        <td>Reissued Invoice</td>
+                        <td>Same number as original = duplicate</td>
+                        <td style="color: var(--red);">⚠️ Alert</td>
+                    </tr>
+                    <tr>
+                        <td>Delivery Order</td>
+                        <td>Links PO to invoice correctly</td>
+                        <td style="color: var(--green);">✅ OK</td>
+                    </tr>
+                    <tr>
+                        <td>Payment Receipt</td>
+                        <td>Says "SETTLED" but invoice says "UNPAID"</td>
+                        <td style="color: var(--red);">⚠️ Alert</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="margin-top: 16px; padding: 16px; background: var(--red-light); border-radius: 10px; text-align: center;">
+                <strong style="color: var(--red);">Result: 70/100 HIGH RISK → Payment Blocked for Human Review</strong>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="section">
+            <h2 class="section-title">❓ Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <h4>Do I need to install any software?</h4>
+                <p>No! Everything runs in your web browser through Google Colab. Just click the link and run.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Is my data safe?</h4>
+                <p>Yes. Bank accounts are automatically masked (only last 4 digits shown). No personal data is stored after the session ends.</p>
+            </div>
+            <div class="faq-item">
+                <h4>How many files can I upload at once?</h4>
+                <p>There's no hard limit. We recommend uploading all documents from one transaction together (e.g., PO + invoice + receipt) for the best analysis.</p>
+            </div>
+            <div class="faq-item">
+                <h4>What if I only have one document?</h4>
+                <p>That works too! The system will classify it and extract key fields. However, cross-document checks (like matching bank accounts) work best with multiple related documents.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Can I use this for any supplier or country?</h4>
+                <p>Currently optimized for Malaysian AP documents (MYR currency, SST tax, Company Registration numbers). The core logic works with any supplier.</p>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta">
+            <h3>Ready to Analyze Your Documents?</h3>
+            <p>Upload your files and get an instant risk assessment.</p>
+            <a href="https://github.com/ekc2024/ScamGuard-MY/tree/main/sample-uploads" class="btn btn-primary">
+                📁 Upload Files on GitHub
+            </a>
+            <a href="https://colab.research.google.com/github/ekc2024/ScamGuard-MY/blob/main/credit-analyzer-v3-production/credit-analyzer-complete/VendorGuard_AI_AP_Automation.ipynb" class="btn btn-secondary">
+                🚀 Open in Colab
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>
+                VendorGuard AI — Part of <a href="https://github.com/ekc2024/ScamGuard-MY">ScamGuard-MY</a><br>
+                Built with ❤️ for finance teams who want to stop fraud before it happens.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
