@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { checkReferenceList } from "./lib/check-reference-list.mjs";
+import { DISCLAIMERS } from "./lib/disclaimers.mjs";
 import { checkUrl } from "./lib/check-url.mjs";
 import { loadReferenceData } from "./lib/load-reference-data.node.mjs";
 import { triageMessage } from "./lib/triage.mjs";
@@ -35,6 +36,11 @@ function render(result) {
   return lines.join("\n");
 }
 
+function renderLookup(value, json) {
+  const body = JSON.stringify(value, null, 2);
+  return json ? body : [body, "", ...DISCLAIMERS].join("\n");
+}
+
 function main(argv) {
   const json = argv.includes("--json");
   const args = argv.filter((arg) => arg !== "--json");
@@ -48,13 +54,13 @@ function main(argv) {
 
   const urlIndex = args.indexOf("--url");
   if (urlIndex !== -1) {
-    console.log(JSON.stringify(checkUrl(args[urlIndex + 1] ?? ""), null, 2));
+    console.log(renderLookup(checkUrl(args[urlIndex + 1] ?? ""), json));
     return;
   }
 
   const identifierIndex = args.indexOf("--identifier");
   if (identifierIndex !== -1) {
-    console.log(JSON.stringify(checkReferenceList(args[identifierIndex + 1] ?? ""), null, 2));
+    console.log(renderLookup(checkReferenceList(args[identifierIndex + 1] ?? ""), json));
     return;
   }
 

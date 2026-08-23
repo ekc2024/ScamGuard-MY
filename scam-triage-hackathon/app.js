@@ -32,6 +32,7 @@ const messageField = document.getElementById("message");
 const submitButton = document.getElementById("submit");
 const errorBox = document.getElementById("error");
 const resultBox = document.getElementById("result");
+const bootError = document.getElementById("boot-error");
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -153,18 +154,17 @@ function renderSamples() {
 }
 
 async function main() {
+  bootError.hidden = true;
   renderDisclaimers(document.getElementById("header-disclaimers"), DISCLAIMERS);
   renderSamples();
 
-  submitButton.disabled = true;
   try {
     await loadReferenceData();
   } catch (loadError) {
     showError(`${loadError.message} Serve this folder over HTTP (npm start) rather than opening the file directly.`);
     return;
-  } finally {
-    submitButton.disabled = false;
   }
+  submitButton.disabled = false;
 
   const meta = getReferenceMeta();
   document.getElementById("reference-meta").textContent =

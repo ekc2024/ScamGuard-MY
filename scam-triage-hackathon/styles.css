@@ -137,6 +137,10 @@ button[type="submit"][disabled] {
   color: var(--muted);
 }
 
+[hidden] {
+  display: none !important;
+}
+
 .error {
   margin: 0;
   color: var(--red);

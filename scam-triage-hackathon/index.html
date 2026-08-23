@@ -19,7 +19,10 @@
           Paste a forwarded message and get a STOP-CHECK-REPORT assessment against six scam categories seen in the
           TAR UMT Scam Ready Movers survey (18-20 Aug 2026).
         </p>
-        <ul class="disclaimers" id="header-disclaimers"></ul>
+        <ul class="disclaimers" id="header-disclaimers">
+          <li>AI-generated assessment - not an official determination</li>
+          <li>Checked against demo reference data, not a live database</li>
+        </ul>
       </header>
 
       <form id="triage-form" class="card">
@@ -32,7 +35,7 @@
           placeholder="Paste the WhatsApp, SMS or social media message here, including any link or phone number."
         ></textarea>
         <div class="form-row">
-          <button type="submit" id="submit">Check this message</button>
+          <button type="submit" id="submit" disabled>Check this message</button>
           <span class="hint">Text only. Runs in your browser - nothing is uploaded or stored.</span>
         </div>
         <div class="samples">
@@ -40,6 +43,10 @@
           <span id="sample-buttons"></span>
         </div>
         <p class="error" id="error" hidden></p>
+        <p class="error" id="boot-error">
+          This page has not finished loading. It must be served over HTTP (run <code>npm start</code> and open
+          http://localhost:3100) - opening index.html directly from disk will not work.
+        </p>
       </form>
 
       <section id="result" class="result" hidden></section>
