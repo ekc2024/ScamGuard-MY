@@ -1,0 +1,84 @@
+{
+  "_disclaimer": "DEMO PLACEHOLDER DATA - hand-written for the hackathon prototype. This is NOT a live database and NOT an official record of any kind. Entries are illustrative and must never be presented as verified fact.",
+  "_source": "Illustrative entries modelled on the TAR UMT Scam Ready Movers survey responses (18-20 Aug 2026)",
+  "_version": "2026-08-23",
+  "entries": [
+    {
+      "identifier": "+60123456789",
+      "type": "phone",
+      "reportedAs": "job_deposit_scam",
+      "reportCount": 14,
+      "note": "Demo entry: number used to offer RM300/day part-time work requiring a RM250 deposit."
+    },
+    {
+      "identifier": "+60187654321",
+      "type": "phone",
+      "reportedAs": "authority_fraud_robocall",
+      "reportCount": 9,
+      "note": "Demo entry: automated call claiming a frozen bank account and asking the recipient to press 1."
+    },
+    {
+      "identifier": "+60129998877",
+      "type": "phone",
+      "reportedAs": "social_media_impersonation",
+      "reportCount": 6,
+      "note": "Demo entry: 'this is my new number' message impersonating a family member."
+    },
+    {
+      "identifier": "tngo-reload-verify.xyz",
+      "type": "url",
+      "reportedAs": "tng_ewallet_phishing",
+      "reportCount": 21,
+      "note": "Demo entry: lookalike Touch 'n Go reload page harvesting wallet PINs."
+    },
+    {
+      "identifier": "tng-ewallet-rebate.top",
+      "type": "url",
+      "reportedAs": "tng_ewallet_phishing",
+      "reportCount": 11,
+      "note": "Demo entry: fake cashback claim page requesting OTP."
+    },
+    {
+      "identifier": "wasap-hadiah2026.click",
+      "type": "url",
+      "reportedAs": "whatsapp_malicious_link",
+      "reportCount": 17,
+      "note": "Demo entry: WhatsApp giveaway page serving an APK download."
+    },
+    {
+      "identifier": "biasiswa-mysejahtera-grant.top",
+      "type": "url",
+      "reportedAs": "education_scholarship_scam",
+      "reportCount": 5,
+      "note": "Demo entry: fake scholarship portal charging an RM50 processing fee."
+    },
+    {
+      "identifier": "514012345678",
+      "type": "bank_account",
+      "reportedAs": "job_deposit_scam",
+      "reportCount": 12,
+      "note": "Demo entry: mule account collecting part-time job deposits."
+    },
+    {
+      "identifier": "158901234567",
+      "type": "bank_account",
+      "reportedAs": "education_scholarship_scam",
+      "reportCount": 4,
+      "note": "Demo entry: account used to collect scholarship 'processing fees'."
+    },
+    {
+      "identifier": "@tngo.official.my",
+      "type": "social_handle",
+      "reportedAs": "social_media_impersonation",
+      "reportCount": 8,
+      "note": "Demo entry: Instagram handle impersonating an eWallet support account."
+    },
+    {
+      "identifier": "@hr.recruit.my2026",
+      "type": "social_handle",
+      "reportedAs": "job_deposit_scam",
+      "reportCount": 7,
+      "note": "Demo entry: handle posting part-time job adverts that request deposits."
+    }
+  ]
+}
