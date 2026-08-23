@@ -3,12 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { FileText, LayoutDashboard, FolderOpen, PenLine } from "lucide-react";
+import {
+  FileText,
+  LayoutDashboard,
+  FolderOpen,
+  PenLine,
+  ShieldAlert,
+} from "lucide-react";
 
 const navItems = [
   { href: "/", label: "New Brief", icon: PenLine },
   { href: "/status", label: "Status", icon: LayoutDashboard },
   { href: "/library", label: "Library", icon: FolderOpen },
+  { href: "/scam-triage", label: "Scam Triage", icon: ShieldAlert },
 ];
 
 export function Navigation() {
