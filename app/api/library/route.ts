@@ -1,7 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-
-// Content Library database ID
-const LIBRARY_DATABASE_ID = "d2e835f8b26e4190a76283d58a13c5c9";
+import { NextRequest } from "next/server";
+import { catchResponse, errorResponse, successResponse } from "@/lib/api-response";
+import {
+  extractMultiSelect,
+  extractTextContent,
+  LIBRARY_DATABASE_ID,
+  queryNotionDatabase,
+} from "@/lib/notion";
 
 export interface ContentItem {
   id: string;
@@ -11,29 +15,6 @@ export interface ContentItem {
   tags: string[];
   content: string | null;
   createdTime: string;
-}
-
-function extractTextContent(property: Record<string, unknown> | undefined): string | null {
-  if (!property) return null;
-  
-  if (property.title && Array.isArray(property.title)) {
-    return (property.title as Array<{ plain_text?: string }>)[0]?.plain_text || null;
-  }
-  if (property.rich_text && Array.isArray(property.rich_text)) {
-    return (property.rich_text as Array<{ plain_text?: string }>).map(t => t.plain_text || '').join('') || null;
-  }
-  if (property.select && typeof property.select === 'object' && property.select !== null) {
-    return (property.select as { name?: string }).name || null;
-  }
-  return null;
-}
-
-function extractMultiSelect(property: Record<string, unknown> | undefined): string[] {
-  if (!property) return [];
-  if (property.multi_select && Array.isArray(property.multi_select)) {
-    return (property.multi_select as Array<{ name?: string }>).map(item => item.name || '').filter(Boolean);
-  }
-  return [];
 }
 
 export async function GET(request: NextRequest) {
@@ -78,26 +59,12 @@ export async function GET(request: NextRequest) {
         : { and: filterConditions };
     }
 
-    const response = await fetch(
-      `https://api.notion.com/v1/databases/${LIBRARY_DATABASE_ID}/query`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.NOTION_API_KEY}`,
-          "Content-Type": "application/json",
-          "Notion-Version": "2022-06-28",
-        },
-        body: JSON.stringify(requestBody),
-      }
-    );
+    const response = await queryNotionDatabase(LIBRARY_DATABASE_ID, requestBody);
 
     if (!response.ok) {
       const error = await response.json();
       console.error("Notion API error:", error);
-      return NextResponse.json(
-        { success: false, error: error.message || "Failed to fetch library" },
-        { status: 500 }
-      );
+      return errorResponse(error.message || "Failed to fetch library", 500);
     }
 
     const data = await response.json();
@@ -119,19 +86,11 @@ export async function GET(request: NextRequest) {
     const categories = [...new Set(items.map(i => i.category).filter(Boolean))] as string[];
     const types = [...new Set(items.map(i => i.type).filter(Boolean))] as string[];
 
-    return NextResponse.json({ 
-      success: true, 
+    return successResponse({
       items,
       filters: { categories, types },
     });
   } catch (error) {
-    console.error("Error fetching library:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to fetch library",
-      },
-      { status: 500 }
-    );
+    return catchResponse(error, "Error fetching library:", "Failed to fetch library");
   }
 }

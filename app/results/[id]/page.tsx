@@ -27,7 +27,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StoryboardGrid, parseStoryboardFromText, type StoryboardShot } from "@/components/storyboard-grid";
-import type { BriefResult } from "@/app/api/briefs/[id]/route";
+import { fetchJson, type ApiResponse } from "@/lib/fetch-json";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import type { BriefResult } from "@/lib/notion";
 
 function ScoreRing({ score, label }: { score: number | null; label: string }) {
   const displayScore = score ?? 0;
@@ -76,12 +78,10 @@ function ScoreRing({ score, label }: { score: number | null; label: string }) {
 }
 
 function CopyButton({ text, label }: { text: string; label: string }) {
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopyToClipboard();
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    await copy(text);
   };
 
   return (
@@ -180,14 +180,12 @@ function ActionBar({
   notionPageId: string;
 }) {
   const router = useRouter();
-  const [copiedAll, setCopiedAll] = useState(false);
+  const { copied: copiedAll, copy } = useCopyToClipboard();
 
   const handleCopyAllPrompts = async () => {
     const formatted = formatPromptsForClipboard(shots);
     if (formatted) {
-      await navigator.clipboard.writeText(formatted);
-      setCopiedAll(true);
-      setTimeout(() => setCopiedAll(false), 2000);
+      await copy(formatted);
     }
   };
 
@@ -356,8 +354,9 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
   useEffect(() => {
     const fetchBrief = async () => {
       try {
-        const response = await fetch(`/api/briefs/${resolvedParams.id}`);
-        const data = await response.json();
+        const data = await fetchJson<ApiResponse<{ brief: BriefResult }>>(
+          `/api/briefs/${resolvedParams.id}`
+        );
 
         if (data.success) {
           setBrief(data.brief);

@@ -17,7 +17,8 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Brief } from "@/app/api/briefs/route";
+import { fetchJson, type ApiResponse } from "@/lib/fetch-json";
+import type { Brief } from "@/lib/notion";
 
 const STATUS_CONFIG: Record<string, { color: string; icon: typeof Clock; label: string }> = {
   "New": { color: "bg-blue-100 text-blue-700", icon: Clock, label: "Processing" },
@@ -124,8 +125,9 @@ export default function StatusPage() {
     setHasSearched(true);
 
     try {
-      const response = await fetch(`/api/briefs?briefId=${encodeURIComponent(briefId)}`);
-      const data = await response.json();
+      const data = await fetchJson<ApiResponse<{ briefs: Brief[] }>>(
+        `/api/briefs?briefId=${encodeURIComponent(briefId)}`
+      );
 
       if (data.success) {
         setBriefs(data.briefs);
@@ -154,8 +156,9 @@ export default function StatusPage() {
     setHasSearched(true);
 
     try {
-      const response = await fetch(`/api/briefs?email=${encodeURIComponent(email.trim())}`);
-      const data = await response.json();
+      const data = await fetchJson<ApiResponse<{ briefs: Brief[] }>>(
+        `/api/briefs?email=${encodeURIComponent(email.trim())}`
+      );
 
       if (data.success) {
         setBriefs(data.briefs);
