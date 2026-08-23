@@ -1,3 +1,8 @@
+export type ApiResponse<T extends object> = {
+  success: boolean;
+  error?: string;
+} & T;
+
 export async function fetchJson<T>(
   url: string,
   options?: RequestInit

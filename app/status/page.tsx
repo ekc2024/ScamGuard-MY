@@ -17,7 +17,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { fetchJson } from "@/lib/fetch-json";
+import { fetchJson, type ApiResponse } from "@/lib/fetch-json";
 import type { Brief } from "@/lib/notion";
 
 const STATUS_CONFIG: Record<string, { color: string; icon: typeof Clock; label: string }> = {
@@ -125,11 +125,9 @@ export default function StatusPage() {
     setHasSearched(true);
 
     try {
-      const data = await fetchJson<{
-        success: boolean;
-        briefs: Brief[];
-        error?: string;
-      }>(`/api/briefs?briefId=${encodeURIComponent(briefId)}`);
+      const data = await fetchJson<ApiResponse<{ briefs: Brief[] }>>(
+        `/api/briefs?briefId=${encodeURIComponent(briefId)}`
+      );
 
       if (data.success) {
         setBriefs(data.briefs);
@@ -158,11 +156,9 @@ export default function StatusPage() {
     setHasSearched(true);
 
     try {
-      const data = await fetchJson<{
-        success: boolean;
-        briefs: Brief[];
-        error?: string;
-      }>(`/api/briefs?email=${encodeURIComponent(email.trim())}`);
+      const data = await fetchJson<ApiResponse<{ briefs: Brief[] }>>(
+        `/api/briefs?email=${encodeURIComponent(email.trim())}`
+      );
 
       if (data.success) {
         setBriefs(data.briefs);

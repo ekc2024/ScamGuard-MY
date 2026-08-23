@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StoryboardGrid, parseStoryboardFromText, type StoryboardShot } from "@/components/storyboard-grid";
-import { fetchJson } from "@/lib/fetch-json";
+import { fetchJson, type ApiResponse } from "@/lib/fetch-json";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import type { BriefResult } from "@/lib/notion";
 
@@ -354,11 +354,9 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
   useEffect(() => {
     const fetchBrief = async () => {
       try {
-        const data = await fetchJson<{
-          success: boolean;
-          brief: BriefResult;
-          error?: string;
-        }>(`/api/briefs/${resolvedParams.id}`);
+        const data = await fetchJson<ApiResponse<{ brief: BriefResult }>>(
+          `/api/briefs/${resolvedParams.id}`
+        );
 
         if (data.success) {
           setBrief(data.brief);

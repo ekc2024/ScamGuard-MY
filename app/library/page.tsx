@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import type { ContentItem } from "@/app/api/library/route";
-import { fetchJson } from "@/lib/fetch-json";
+import { fetchJson, type ApiResponse } from "@/lib/fetch-json";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 function ContentCard({ 
@@ -198,12 +198,12 @@ export default function LibraryPage() {
       if (selectedCategory) params.set("category", selectedCategory);
       if (selectedType) params.set("type", selectedType);
 
-      const data = await fetchJson<{
-        success: boolean;
-        items: ContentItem[];
-        filters?: { categories: string[]; types: string[] };
-        error?: string;
-      }>(`/api/library?${params.toString()}`);
+      const data = await fetchJson<
+        ApiResponse<{
+          items: ContentItem[];
+          filters?: { categories: string[]; types: string[] };
+        }>
+      >(`/api/library?${params.toString()}`);
 
       if (data.success) {
         setItems(data.items);
