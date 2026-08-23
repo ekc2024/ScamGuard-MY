@@ -44,7 +44,7 @@ const EXAMPLES = [
 export default function ScamTriagePage() {
   const [message, setMessage] = useState("");
   const [result, setResult] = useState<string | null>(null);
-  const [engine, setEngine] = useState<"hermes" | "local" | null>(null);
+  const [engine, setEngine] = useState<"hermes" | "local" | "qwen" | null>(null);
   const [error, setError] = useState("");
   const [isChecking, setIsChecking] = useState(false);
 
@@ -87,7 +87,9 @@ export default function ScamTriagePage() {
 
       setResult(data.result);
       setEngine(
-        "engine" in data && data.engine === "hermes" ? "hermes" : "local",
+        "engine" in data && typeof data.engine === "string"
+          ? (data.engine as "hermes" | "local" | "qwen")
+          : "local",
       );
     } catch (requestError) {
       setError(
@@ -146,9 +148,9 @@ export default function ScamTriagePage() {
               Check a message
             </CardTitle>
             <CardDescription>
-              Checks run on the free built-in rule engine by default. When a
-              Hermes agent is connected (HERMES_AGENT_URL), messages are
-              forwarded to it instead.
+              When configured, messages are analyzed by Qwen AI for intelligent
+              scam detection. Falls back to the free built-in rule engine when
+              no AI provider is connected.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -234,14 +236,18 @@ export default function ScamTriagePage() {
                 {engine && (
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      engine === "hermes"
-                        ? "bg-[#1A1F36] text-[#F5A623]"
-                        : "bg-[#F5A623]/15 text-[#1A1F36]"
+                      engine === "qwen"
+                        ? "bg-purple-100 text-purple-800"
+                        : engine === "hermes"
+                          ? "bg-[#1A1F36] text-[#F5A623]"
+                          : "bg-[#F5A623]/15 text-[#1A1F36]"
                     }`}
                   >
-                    {engine === "hermes"
-                      ? "Answered by Hermes agent"
-                      : "Built-in rule engine (free)"}
+                    {engine === "qwen"
+                      ? "Powered by Qwen AI"
+                      : engine === "hermes"
+                        ? "Answered by Hermes agent"
+                        : "Built-in rule engine (free)"}
                   </span>
                 )}
               </div>
