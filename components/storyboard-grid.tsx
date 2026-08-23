@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { copyToClipboard } from "@/lib/clipboard";
 
 export interface StoryboardShot {
   shotNumber: number;
@@ -26,14 +27,19 @@ const WAN_MODEL_COLORS: Record<string, { bg: string; text: string; border: strin
 function ShotCard({ shot }: { shot: StoryboardShot }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
 
   const modelStyle = WAN_MODEL_COLORS[shot.wanModel] || WAN_MODEL_COLORS["Wan-T2V"];
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    await navigator.clipboard.writeText(shot.wanPrompt);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const succeeded = await copyToClipboard(shot.wanPrompt);
+    setCopied(succeeded);
+    setCopyFailed(!succeeded);
+    setTimeout(() => {
+      setCopied(false);
+      setCopyFailed(false);
+    }, 2000);
   };
 
   return (
@@ -101,15 +107,21 @@ function ShotCard({ shot }: { shot: StoryboardShot }) {
               onClick={handleCopy}
               className={cn(
                 "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                copied
-                  ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                  : "bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/10"
+                copied && "bg-green-500/20 text-green-400 border border-green-500/30",
+                copyFailed && "bg-red-500/20 text-red-400 border border-red-500/30",
+                !copied && !copyFailed &&
+                  "bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/10"
               )}
             >
               {copied ? (
                 <>
                   <Check className="w-3.5 h-3.5" />
                   Copied!
+                </>
+              ) : copyFailed ? (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  Copy failed
                 </>
               ) : (
                 <>

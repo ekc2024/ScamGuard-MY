@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { NotionRequestError, notionFetch, toErrorResponse } from "@/lib/notion";
 
 // Content Library database ID
 const LIBRARY_DATABASE_ID = "d2e835f8b26e4190a76283d58a13c5c9";
@@ -78,29 +79,18 @@ export async function GET(request: NextRequest) {
         : { and: filterConditions };
     }
 
-    const response = await fetch(
-      `https://api.notion.com/v1/databases/${LIBRARY_DATABASE_ID}/query`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.NOTION_API_KEY}`,
-          "Content-Type": "application/json",
-          "Notion-Version": "2022-06-28",
-        },
-        body: JSON.stringify(requestBody),
-      }
-    );
+    const data = await notionFetch<{
+      results: { id: string; properties: Record<string, Record<string, unknown>>; created_time: string }[];
+    }>(`/databases/${LIBRARY_DATABASE_ID}/query`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestBody),
+      errorMessage: "Failed to fetch library",
+    });
 
-    if (!response.ok) {
-      const error = await response.json();
-      console.error("Notion API error:", error);
-      return NextResponse.json(
-        { success: false, error: error.message || "Failed to fetch library" },
-        { status: 500 }
-      );
+    if (!Array.isArray(data.results)) {
+      throw new NotionRequestError("Unexpected response shape from Notion query", 502);
     }
-
-    const data = await response.json();
 
     const items: ContentItem[] = data.results.map((page: { id: string; properties: Record<string, Record<string, unknown>>; created_time: string }) => {
       const properties = page.properties;
@@ -125,13 +115,11 @@ export async function GET(request: NextRequest) {
       filters: { categories, types },
     });
   } catch (error) {
-    console.error("Error fetching library:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to fetch library",
-      },
-      { status: 500 }
+    const { status, body } = toErrorResponse(
+      "api/library GET",
+      error,
+      "Failed to fetch library"
     );
+    return NextResponse.json(body, { status });
   }
 }

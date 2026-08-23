@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { notionFetch, toErrorResponse } from "@/lib/notion";
 
 export interface BriefResult {
   id: string;
@@ -17,6 +18,8 @@ export interface BriefResult {
   deadline: string | null;
   sourceChannel: string | null;
   status: string | null;
+  purpose: string | null;
+  videoMode: string | null;
   createdTime: string;
   // Script fields
   script: string | null;
@@ -71,27 +74,21 @@ export async function GET(
 ) {
   const { id } = await params;
 
-  try {
-    const pageResponse = await fetch(
-      `https://api.notion.com/v1/pages/${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.NOTION_API_KEY}`,
-          "Notion-Version": "2022-06-28",
-        },
-      }
+  if (!id) {
+    return NextResponse.json(
+      { success: false, error: "Brief ID is required" },
+      { status: 400 }
     );
+  }
 
-    if (!pageResponse.ok) {
-      const error = await pageResponse.json();
-      return NextResponse.json(
-        { success: false, error: error.message || "Brief not found" },
-        { status: 404 }
-      );
-    }
+  try {
+    const page = await notionFetch<{
+      id: string;
+      properties: Record<string, Record<string, unknown>>;
+      created_time: string;
+    }>(`/pages/${id}`, { errorMessage: "Brief not found" });
 
-    const page = await pageResponse.json();
-    const properties = page.properties as Record<string, Record<string, unknown>>;
+    const properties = page.properties;
 
     const brief: BriefResult = {
       id: page.id,
@@ -110,6 +107,8 @@ export async function GET(
       deadline: extractTextContent(properties["Deadline"]),
       sourceChannel: extractTextContent(properties["Source Channel"]),
       status: extractTextContent(properties["Status"]),
+      purpose: extractTextContent(properties["Purpose"]),
+      videoMode: extractTextContent(properties["Video Mode"]),
       createdTime: page.created_time,
       // Script fields
       script: extractTextContent(properties["Script"]),
@@ -122,13 +121,11 @@ export async function GET(
 
     return NextResponse.json({ success: true, brief });
   } catch (error) {
-    console.error("Error fetching brief:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to fetch brief",
-      },
-      { status: 500 }
+    const { status, body } = toErrorResponse(
+      "api/briefs/[id] GET",
+      error,
+      "Failed to fetch brief"
     );
+    return NextResponse.json(body, { status });
   }
 }

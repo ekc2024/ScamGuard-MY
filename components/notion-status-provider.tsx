@@ -53,9 +53,14 @@ export function NotionStatusProvider({ children }: { children: React.ReactNode }
       if (response.ok) {
         setStatus("connected");
       } else {
+        console.error(
+          `Notion connection check failed with HTTP ${response.status}:`,
+          await response.text().catch(() => "<unreadable body>")
+        );
         setStatus("disconnected");
       }
-    } catch {
+    } catch (error) {
+      console.error("Notion connection check failed:", error);
       setStatus("disconnected");
     }
   }, []);
