@@ -25,7 +25,8 @@ npm test             # smoke checks over all three demo-ready categories
 node cli.mjs "Akaun TNG anda akan digantung, sahkan OTP di https://tngo-reload-verify.xyz/login"
 ```
 
-The page runs entirely client-side; no message text ever leaves the browser.
+The verdict is computed entirely client-side. Message text leaves the browser
+only if the user ticks the optional Qwen explanation box (see below).
 
 ## Deploy the live URL
 
@@ -35,6 +36,9 @@ deploy it as its own Vercel project rather than through the root Next.js app:
 1. New Vercel project on this repo, branch `hackathon-scam-triage`.
 2. **Root Directory** = `scam-triage-hackathon`.
 3. **Framework Preset** = Other, no build command, output directory = `.`.
+4. Optional: set the `QWEN_API_KEY` environment variable to enable the Qwen
+   explanation layer. `api/enrich.mjs` is picked up as a serverless function.
+   Without the variable the page works exactly the same, minus the explanation.
 
 Any static host works the same way - the only requirement is HTTP, since
 `lib/reference-data.json` is fetched at page load (opening `index.html` from the
@@ -63,6 +67,27 @@ Three categories are tuned and demo-ready (`tng_ewallet_phishing`,
 `whatsapp_malicious_link`, `job_deposit_scam`). The other three are marked
 `coverage: "partial"`, structurally capped at medium confidence, and labelled as
 such in the UI.
+
+## Optional Qwen enrichment
+
+`lib/qwen-enrich.mjs` asks Qwen (ModelScope, `Qwen-Ambassador/Qwen3.8-Max`, via
+Node's built-in `fetch`) for a one-paragraph plain-language explanation of a
+verdict that has **already** been decided. It never re-decides, re-scores or
+overrides anything, and it only runs when:
+
+- the matched category is one of the three fully-covered ones,
+- the user ticks the opt-in box (the message text is sent to ModelScope), and
+- `QWEN_API_KEY` is set on the server.
+
+Every other case - missing key, HTTP error, timeout, partial category - degrades
+silently to "no explanation" and leaves the verdict untouched. The key is read
+from `process.env.QWEN_API_KEY` server-side only; the browser posts to
+`/api/enrich` (`api/enrich.mjs` on Vercel, handled directly by `server.mjs`
+locally) so the key is never shipped to the client.
+
+```bash
+QWEN_API_KEY=... npm start
+```
 
 ## Demo reference data is fake
 

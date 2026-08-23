@@ -4,6 +4,8 @@ import { checkUrl } from "../lib/check-url.mjs";
 import { DISCLAIMERS } from "../lib/disclaimers.mjs";
 import { loadReferenceData } from "../lib/load-reference-data.node.mjs";
 import { triageMessage } from "../lib/triage.mjs";
+import { enrichVerdict, isEnrichableCategory } from "../lib/qwen-enrich.mjs";
+import { handleEnrich } from "../lib/enrich-handler.mjs";
 
 loadReferenceData();
 
@@ -84,6 +86,61 @@ try {
 } catch (error) {
   failures += 1;
   console.error(`FAIL check_url and check_reference_list: ${error.message}`);
+}
+
+// Optional Qwen enrichment layer: never required, never verdict-changing.
+const phishing = triageMessage(
+  "AMARAN: Akaun TNG eWallet anda akan digantung. Sahkan OTP anda di https://tngo-reload-verify.xyz/login."
+);
+const partial = triageMessage(
+  "PDRM automated message: a warrant has been issued. Press 1 now to settle the compound."
+);
+
+const stubFetch = (payload, ok = true) => async () => ({
+  ok,
+  status: ok ? 200 : 500,
+  json: async () => payload,
+});
+
+try {
+  assert.equal(isEnrichableCategory("tng_ewallet_phishing"), true);
+  assert.equal(isEnrichableCategory("authority_fraud_robocall"), false);
+
+  const noKey = await enrichVerdict(phishing, "text", { apiKey: undefined });
+  assert.equal(noKey.available, false, "missing key must disable enrichment");
+
+  const notCovered = await enrichVerdict(partial, "text", { apiKey: "test-key" });
+  assert.equal(notCovered.available, false, "partial categories must not be enriched");
+
+  const failed = await enrichVerdict(phishing, "text", { apiKey: "test-key", fetchImpl: stubFetch({}, false) });
+  assert.equal(failed.available, false, "HTTP failure must degrade silently");
+  assert.equal(failed.explanation, null);
+
+  const enriched = await enrichVerdict(phishing, "text", {
+    apiKey: "test-key",
+    fetchImpl: stubFetch({ choices: [{ message: { content: "  This message pretends\n to be TnG.  " } }] }),
+  });
+  assert.equal(enriched.available, true);
+  assert.equal(enriched.explanation, "This message pretends to be TnG.");
+
+  const handled = await handleEnrich(
+    JSON.stringify({
+      message: "AMARAN: Akaun TNG eWallet anda akan digantung. Sahkan OTP anda di https://tngo-reload-verify.xyz/login.",
+    }),
+    { apiKey: "test-key", fetchImpl: stubFetch({ choices: [{ message: { content: "Explanation." } }] }) }
+  );
+  assert.equal(handled.status, 200);
+  assert.equal(handled.body.verdict, phishing.verdict, "enrichment must not change the verdict");
+  assert.deepEqual(handled.body.disclaimers, DISCLAIMERS);
+  assert.equal(handled.body.enrichment.explanation, "Explanation.");
+
+  const rejected = await handleEnrich("{}");
+  assert.equal(rejected.status, 400);
+
+  console.log("ok   optional Qwen enrichment layer");
+} catch (error) {
+  failures += 1;
+  console.error(`FAIL optional Qwen enrichment layer: ${error.message}`);
 }
 
 if (failures > 0) {

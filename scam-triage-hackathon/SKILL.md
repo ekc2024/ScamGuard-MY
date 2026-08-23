@@ -74,6 +74,16 @@ database, not an official record, and holds roughly a dozen illustrative
 entries. Always label it as demo data in any UI or chat output. Never imply a
 non-match means a message is safe.
 
+## Optional Qwen enrichment
+
+`lib/qwen-enrich.mjs` (`enrichVerdict`) can add a one-paragraph plain-language
+explanation of a verdict that has already been decided. It is an enrichment
+layer only: it must never re-decide, re-score or override the pattern-matching
+verdict, and the system prompt forbids it explicitly. It runs only for the three
+fully-covered categories, only when `QWEN_API_KEY` is set, and degrades silently
+to no explanation on any error or timeout. The verdict, disclaimers and
+"not a clearance" wording must stand on their own with enrichment off.
+
 ## Calling the implementation
 
 The whole prototype is dependency-free Node ESM, so the skill can shell out to
@@ -109,5 +119,7 @@ const result = triageMessage(messageText);
 | Mandatory disclaimers | `lib/disclaimers.mjs` |
 | Web front-end (one page) | `index.html`, `app.js`, `styles.css` |
 | CLI for Hermes / terminal use | `cli.mjs` |
-| Local static server | `server.mjs` |
+| Local static server (also serves `/api/enrich`) | `server.mjs` |
+| Optional Qwen explanation layer | `lib/qwen-enrich.mjs` |
+| Server-side enrichment endpoint | `lib/enrich-handler.mjs`, `api/enrich.mjs` |
 | Smoke checks | `tests/smoke.mjs` |

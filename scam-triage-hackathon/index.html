@@ -36,8 +36,15 @@
         ></textarea>
         <div class="form-row">
           <button type="submit" id="submit" disabled>Check this message</button>
-          <span class="hint">Text only. Runs in your browser - nothing is uploaded or stored.</span>
+          <span class="hint">Text only. The assessment itself runs in your browser - nothing is uploaded or stored.</span>
         </div>
+        <label class="opt-in" for="enrich">
+          <input type="checkbox" id="enrich" name="enrich" />
+          <span>
+            Add an AI plain-language explanation (optional). This sends the message text to Qwen via ModelScope and
+            never changes the verdict.
+          </span>
+        </label>
         <div class="samples">
           <span class="hint">Try an example:</span>
           <span id="sample-buttons"></span>

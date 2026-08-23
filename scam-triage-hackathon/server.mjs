@@ -2,6 +2,7 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
+import { handleEnrich } from "./lib/enrich-handler.mjs";
 
 const ROOT = fileURLToPath(new URL(".", import.meta.url));
 const PORT = Number(process.env.PORT ?? 3100);
@@ -18,6 +19,18 @@ const CONTENT_TYPES = {
 /** Static file server for local development; production is served straight off a static host. */
 const server = createServer(async (request, response) => {
   const pathname = decodeURIComponent(new URL(request.url, `http://${request.headers.host}`).pathname);
+  if (pathname === "/api/enrich") {
+    if (request.method !== "POST") {
+      response.writeHead(405, { "content-type": "application/json" }).end(JSON.stringify({ error: "Use POST." }));
+      return;
+    }
+    const chunks = [];
+    for await (const chunk of request) chunks.push(chunk);
+    const { status, body } = await handleEnrich(Buffer.concat(chunks).toString("utf8"));
+    response.writeHead(status, { "content-type": "application/json; charset=utf-8" }).end(JSON.stringify(body));
+    return;
+  }
+
   const relative = normalize(pathname === "/" ? "/index.html" : pathname).replace(/^(\.\.[/\\])+/, "");
   const filePath = join(ROOT, relative);
 

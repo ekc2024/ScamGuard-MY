@@ -141,6 +141,22 @@ button[type="submit"][disabled] {
   display: none !important;
 }
 
+.opt-in {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.opt-in input {
+  margin-top: 3px;
+}
+
+.enrichment {
+  border-left: 3px solid var(--amber);
+}
+
 .error {
   margin: 0;
   color: var(--red);
