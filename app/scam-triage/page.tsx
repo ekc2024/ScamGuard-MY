@@ -17,6 +17,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { ScamSequenceSimulator } from "@/components/scam-sequence-simulator";
+import { ScamInboxVisualization } from "@/components/scam-inbox-visualization";
 
 const CLAUDE_ARTIFACT_URL =
   "https://claude.ai/public/artifacts/00e25d86-01c3-4fd3-ae71-812355bcdc32";
@@ -42,6 +44,7 @@ const EXAMPLES = [
 export default function ScamTriagePage() {
   const [message, setMessage] = useState("");
   const [result, setResult] = useState<string | null>(null);
+  const [engine, setEngine] = useState<"hermes" | "local" | null>(null);
   const [error, setError] = useState("");
   const [isChecking, setIsChecking] = useState(false);
 
@@ -55,6 +58,7 @@ export default function ScamTriagePage() {
     setIsChecking(true);
     setError("");
     setResult(null);
+    setEngine(null);
 
     try {
       const response = await fetch("/api/scam-triage", {
@@ -82,6 +86,9 @@ export default function ScamTriagePage() {
       }
 
       setResult(data.result);
+      setEngine(
+        "engine" in data && data.engine === "hermes" ? "hermes" : "local",
+      );
     } catch (requestError) {
       setError(
         requestError instanceof Error
@@ -139,8 +146,9 @@ export default function ScamTriagePage() {
               Check a message
             </CardTitle>
             <CardDescription>
-              The simulated backend runs inside this app; no external service
-              or live reference database is used.
+              Checks run on the free built-in rule engine by default. When a
+              Hermes agent is connected (HERMES_AGENT_URL), messages are
+              forwarded to it instead.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -219,9 +227,24 @@ export default function ScamTriagePage() {
         {result && (
           <Card className="mt-7 border-[#F5A623]/40 shadow-lg">
             <CardHeader className="border-b border-[#1A1F36]/10">
-              <CardTitle className="text-xl text-[#1A1F36]">
-                Assessment result
-              </CardTitle>
+              <div className="flex items-center justify-between gap-3">
+                <CardTitle className="text-xl text-[#1A1F36]">
+                  Assessment result
+                </CardTitle>
+                {engine && (
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                      engine === "hermes"
+                        ? "bg-[#1A1F36] text-[#F5A623]"
+                        : "bg-[#F5A623]/15 text-[#1A1F36]"
+                    }`}
+                  >
+                    {engine === "hermes"
+                      ? "Answered by Hermes agent"
+                      : "Built-in rule engine (free)"}
+                  </span>
+                )}
+              </div>
             </CardHeader>
             <CardContent className="pt-6">
               <pre className="whitespace-pre-wrap font-sans text-sm leading-7 text-[#1A1F36]">
@@ -237,6 +260,11 @@ export default function ScamTriagePage() {
             </CardContent>
           </Card>
         )}
+
+        <div className="mt-10 space-y-8">
+          <ScamSequenceSimulator />
+          <ScamInboxVisualization />
+        </div>
       </div>
     </div>
   );
