@@ -115,7 +115,7 @@ export const SCAM_SIGNAL_DEFINITIONS: ScamSignalDefinition[] = [
     label: "Unusual or foreign phone-number format",
     weight: 8,
     patterns: [
-      /\+(?!60\b)\d[\d\s().-]{6,}\d\b/i,
+      /\+(?!60)\d[\d\s().-]{6,}\d\b/i,
       /\b(?:call|text|hubungi|mesej)\s+(?:me\s+)?(?:at|di)?\s*0(?!1\d)\d[\d\s-]{6,}\b/i,
     ],
   },

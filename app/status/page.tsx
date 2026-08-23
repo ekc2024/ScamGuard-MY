@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -101,7 +101,7 @@ function BriefCard({ brief }: { brief: Brief }) {
   );
 }
 
-export default function StatusPage() {
+function StatusContent() {
   const searchParams = useSearchParams();
   const initialBriefId = searchParams.get("briefId");
   
@@ -304,5 +304,37 @@ export default function StatusPage() {
         )}
       </div>
     </div>
+  );
+}
+
+function StatusLoadingFallback() {
+  return (
+    <div className="min-h-[calc(100vh-4rem)] py-12 px-4">
+      <div className="max-w-3xl mx-auto">
+        <header className="text-center mb-10">
+          <h1 className="text-3xl font-bold text-[#1A1F36] tracking-tight">
+            Brief Status
+          </h1>
+          <p className="text-[#1A1F36]/60 mt-3">
+            Track your submitted briefs and access generated scripts
+          </p>
+        </header>
+        <Card className="border-0 shadow-lg">
+          <CardContent className="p-12">
+            <div className="flex items-center justify-center">
+              <Spinner className="w-8 h-8 text-[#F5A623]" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+export default function StatusPage() {
+  return (
+    <Suspense fallback={<StatusLoadingFallback />}>
+      <StatusContent />
+    </Suspense>
   );
 }
