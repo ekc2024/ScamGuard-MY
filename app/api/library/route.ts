@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { rateLimit, serverError } from "@/lib/api-security";
 
 // Content Library database ID
-const LIBRARY_DATABASE_ID = "d2e835f8b26e4190a76283d58a13c5c9";
+const LIBRARY_DATABASE_ID =
+  process.env.NOTION_LIBRARY_DATABASE_ID || "d2e835f8b26e4190a76283d58a13c5c9";
+
+const querySchema = z.object({
+  category: z.string().trim().min(1).max(100).optional(),
+  type: z.string().trim().min(1).max(100).optional(),
+  search: z.string().trim().min(1).max(200).optional(),
+});
 
 export interface ContentItem {
   id: string;
@@ -37,10 +46,28 @@ function extractMultiSelect(property: Record<string, unknown> | undefined): stri
 }
 
 export async function GET(request: NextRequest) {
+  const limited = rateLimit(request, "library", 60);
+  if (limited) return limited;
+
+  if (!process.env.NOTION_API_KEY) {
+    return serverError("library", new Error("NOTION_API_KEY is not configured"));
+  }
+
   const { searchParams } = new URL(request.url);
-  const category = searchParams.get("category");
-  const type = searchParams.get("type");
-  const search = searchParams.get("search");
+  const parsed = querySchema.safeParse({
+    category: searchParams.get("category") ?? undefined,
+    type: searchParams.get("type") ?? undefined,
+    search: searchParams.get("search") ?? undefined,
+  });
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      { success: false, error: "Invalid filter parameters" },
+      { status: 400 }
+    );
+  }
+
+  const { category, type, search } = parsed.data;
 
   try {
     // Build filter array
@@ -79,7 +106,7 @@ export async function GET(request: NextRequest) {
     }
 
     const response = await fetch(
-      `https://api.notion.com/v1/databases/${LIBRARY_DATABASE_ID}/query`,
+      `https://api.notion.com/v1/databases/${encodeURIComponent(LIBRARY_DATABASE_ID)}/query`,
       {
         method: "POST",
         headers: {
@@ -92,11 +119,10 @@ export async function GET(request: NextRequest) {
     );
 
     if (!response.ok) {
-      const error = await response.json();
-      console.error("Notion API error:", error);
-      return NextResponse.json(
-        { success: false, error: error.message || "Failed to fetch library" },
-        { status: 500 }
+      return serverError(
+        "library",
+        new Error(`Notion query failed with status ${response.status}`),
+        "Failed to fetch library"
       );
     }
 
@@ -125,13 +151,6 @@ export async function GET(request: NextRequest) {
       filters: { categories, types },
     });
   } catch (error) {
-    console.error("Error fetching library:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to fetch library",
-      },
-      { status: 500 }
-    );
+    return serverError("library", error, "Failed to fetch library");
   }
 }
