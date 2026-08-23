@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import assert from "node:assert/strict";
 import { checkReferenceList } from "../lib/check-reference-list.mjs";
 import { checkUrl } from "../lib/check-url.mjs";
@@ -136,6 +137,15 @@ try {
 
   const rejected = await handleEnrich("{}");
   assert.equal(rejected.status, 400);
+
+  // app.js imports this module in the browser, where `process` does not exist.
+  execFileSync(process.execPath, [
+    "--input-type=module",
+    "-e",
+    `delete globalThis.process; const m = await import(${JSON.stringify(
+      new URL("../lib/qwen-enrich.mjs", import.meta.url).href
+    )}); if (!m.isEnrichableCategory("job_deposit_scam")) throw new Error("unexpected");`,
+  ]);
 
   console.log("ok   optional Qwen enrichment layer");
 } catch (error) {

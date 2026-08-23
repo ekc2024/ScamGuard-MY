@@ -7,8 +7,11 @@
  * Every failure path degrades silently to "no explanation".
  */
 
-export const QWEN_BASE_URL = process.env.QWEN_BASE_URL ?? "https://api-inference.modelscope.ai/v1";
-export const QWEN_MODEL = process.env.QWEN_MODEL ?? "Qwen-Ambassador/Qwen3.8-Max";
+/** `process` is absent in the browser, which imports this module for isEnrichableCategory(). */
+const ENV = typeof process !== "undefined" && process.env ? process.env : {};
+
+export const QWEN_BASE_URL = ENV.QWEN_BASE_URL ?? "https://api-inference.modelscope.ai/v1";
+export const QWEN_MODEL = ENV.QWEN_MODEL ?? "Qwen-Ambassador/Qwen3.8-Max";
 
 /** Only the three fully-tuned categories are enriched. */
 export const ENRICHABLE_CATEGORIES = Object.freeze([
@@ -62,7 +65,7 @@ function unavailable(reason) {
  */
 export async function enrichVerdict(result, message, options = {}) {
   const {
-    apiKey = process.env.QWEN_API_KEY,
+    apiKey = ENV.QWEN_API_KEY,
     fetchImpl = globalThis.fetch,
     timeoutMs = DEFAULT_TIMEOUT_MS,
     baseUrl = QWEN_BASE_URL,
