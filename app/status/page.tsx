@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -101,7 +101,7 @@ function BriefCard({ brief }: { brief: Brief }) {
   );
 }
 
-export default function StatusPage() {
+function StatusPageContent() {
   const searchParams = useSearchParams();
   const initialBriefId = searchParams.get("briefId");
   
@@ -304,5 +304,19 @@ export default function StatusPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function StatusPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center py-24">
+          <Spinner className="w-6 h-6 text-[#F5A623]" />
+        </div>
+      }
+    >
+      <StatusPageContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { normalizeNotionId, pageBelongsToDatabase, rateLimit, serverError } from "@/lib/api-security";
 
-const DATABASE_ID = "cc27f313-ae7f-49c9-b67e-eabdfc9dfea8";
+const DATABASE_ID =
+  process.env.NOTION_BRIEFS_DATABASE_ID || "cc27f313-ae7f-49c9-b67e-eabdfc9dfea8";
+
+const querySchema = z.object({
+  email: z.string().trim().email().max(254).optional(),
+  briefId: z.string().trim().max(64).optional(),
+});
 
 export interface Brief {
   id: string;
@@ -73,13 +81,39 @@ function mapPageToBrief(page: { id: string; properties: Record<string, Record<st
 }
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const email = searchParams.get("email");
-  const briefId = searchParams.get("briefId");
+  const limited = rateLimit(request, "briefs", 30);
+  if (limited) return limited;
 
-  if (!email && !briefId) {
+  if (!process.env.NOTION_API_KEY) {
+    return serverError("briefs", new Error("NOTION_API_KEY is not configured"));
+  }
+
+  const { searchParams } = new URL(request.url);
+  const parsed = querySchema.safeParse({
+    email: searchParams.get("email") ?? undefined,
+    briefId: searchParams.get("briefId") ?? undefined,
+  });
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      { success: false, error: "Invalid email or Brief ID" },
+      { status: 400 }
+    );
+  }
+
+  const { email } = parsed.data;
+  const briefId = normalizeNotionId(parsed.data.briefId);
+
+  if (!email && !parsed.data.briefId) {
     return NextResponse.json(
       { success: false, error: "Email or Brief ID is required" },
+      { status: 400 }
+    );
+  }
+
+  if (parsed.data.briefId && !briefId) {
+    return NextResponse.json(
+      { success: false, error: "Invalid Brief ID" },
       { status: 400 }
     );
   }
@@ -88,7 +122,7 @@ export async function GET(request: NextRequest) {
     // If briefId provided, fetch that specific page
     if (briefId) {
       const pageResponse = await fetch(
-        `https://api.notion.com/v1/pages/${briefId}`,
+        `https://api.notion.com/v1/pages/${encodeURIComponent(briefId)}`,
         {
           headers: {
             Authorization: `Bearer ${process.env.NOTION_API_KEY}`,
@@ -98,14 +132,23 @@ export async function GET(request: NextRequest) {
       );
 
       if (!pageResponse.ok) {
-        const error = await pageResponse.json();
         return NextResponse.json(
-          { success: false, error: error.message || "Brief not found" },
+          { success: false, error: "Brief not found" },
           { status: 404 }
         );
       }
 
       const page = await pageResponse.json();
+
+      // Only expose pages that live in the Brief Intake database, so the
+      // integration token cannot be used to read unrelated Notion pages.
+      if (!pageBelongsToDatabase(page, DATABASE_ID)) {
+        return NextResponse.json(
+          { success: false, error: "Brief not found" },
+          { status: 404 }
+        );
+      }
+
       const brief = mapPageToBrief(page);
 
       return NextResponse.json({ success: true, briefs: [brief] });
@@ -118,7 +161,7 @@ export async function GET(request: NextRequest) {
     };
 
     const response = await fetch(
-      `https://api.notion.com/v1/databases/${DATABASE_ID}/query`,
+      `https://api.notion.com/v1/databases/${encodeURIComponent(DATABASE_ID)}/query`,
       {
         method: "POST",
         headers: {
@@ -135,10 +178,10 @@ export async function GET(request: NextRequest) {
     );
 
     if (!response.ok) {
-      const error = await response.json();
-      return NextResponse.json(
-        { success: false, error: error.message || "Failed to fetch briefs" },
-        { status: 500 }
+      return serverError(
+        "briefs",
+        new Error(`Notion query failed with status ${response.status}`),
+        "Failed to fetch briefs"
       );
     }
 
@@ -147,13 +190,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, briefs });
   } catch (error) {
-    console.error("Error fetching briefs:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to fetch briefs",
-      },
-      { status: 500 }
-    );
+    return serverError("briefs", error, "Failed to fetch briefs");
   }
 }
