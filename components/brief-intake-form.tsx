@@ -26,6 +26,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { errorMessage as toErrorText, fetchJson } from "@/lib/api-client";
 
 const PLATFORMS = [
   "TikTok",
@@ -801,7 +802,7 @@ export function BriefIntakeForm() {
     setStatus("syncing");
 
     try {
-      const response = await fetch("/api/submit-brief", {
+      const result = await fetchJson<{ pageId: string }>("/api/submit-brief", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -822,20 +823,16 @@ export function BriefIntakeForm() {
         }),
       });
 
-      const result = await response.json();
-
-      if (result.success) {
-        setSubmitStatus("success");
-        setSubmittedBriefId(result.pageId);
-        // Show toast notification
-        showSyncSuccess(formData.brand || formData.briefTitle);
-      } else {
-        setSubmitStatus("error");
-        setErrorMessage(result.error || "Something went wrong");
-      }
-    } catch {
+      setSubmitStatus("success");
+      setSubmittedBriefId(result.pageId);
+      // Show toast notification
+      showSyncSuccess(formData.brand || formData.briefTitle);
+    } catch (error) {
+      console.error("Failed to submit brief:", error);
       setSubmitStatus("error");
-      setErrorMessage("Failed to submit brief. Please try again.");
+      setErrorMessage(toErrorText(error, "Failed to submit brief. Please try again."));
+      // Never leave the status bar stuck on "Syncing..." after a failure.
+      setStatus("disconnected");
     } finally {
       setIsSubmitting(false);
       setShowAgentProgress(false);

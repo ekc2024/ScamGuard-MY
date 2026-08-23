@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Client } from "@notionhq/client";
-
-const notion = new Client({
-  auth: process.env.NOTION_API_KEY,
-});
+import { getNotionApiKey, toErrorResponse } from "@/lib/notion";
 
 const DATABASE_ID = "cc27f313-ae7f-49c9-b67e-eabdfc9dfea8";
 
@@ -25,9 +22,18 @@ export interface BriefFormData {
 }
 
 export async function POST(request: NextRequest) {
+  let data: BriefFormData;
   try {
-    const data: BriefFormData = await request.json();
+    data = (await request.json()) as BriefFormData;
+  } catch (error) {
+    console.error("[api/submit-brief POST] invalid JSON body", error);
+    return NextResponse.json(
+      { success: false, error: "Request body must be valid JSON" },
+      { status: 400 }
+    );
+  }
 
+  try {
     // Validate required fields
     if (!data.briefTitle || !data.client) {
       return NextResponse.json(
@@ -35,6 +41,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    const notion = new Client({ auth: getNotionApiKey() });
 
     // Create the page in Notion with exact property names
     const response = await notion.pages.create({
@@ -102,14 +110,11 @@ export async function POST(request: NextRequest) {
       pageId: response.id,
     });
   } catch (error) {
-    console.error("Error creating Notion page:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          error instanceof Error ? error.message : "Failed to submit brief",
-      },
-      { status: 500 }
+    const { status, body } = toErrorResponse(
+      "api/submit-brief POST",
+      error,
+      "Failed to submit brief"
     );
+    return NextResponse.json(body, { status });
   }
 }

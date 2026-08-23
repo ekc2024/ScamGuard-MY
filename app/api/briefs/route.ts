@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { NotionRequestError, notionFetch, toErrorResponse } from "@/lib/notion";
 
 const DATABASE_ID = "cc27f313-ae7f-49c9-b67e-eabdfc9dfea8";
 
@@ -87,28 +88,12 @@ export async function GET(request: NextRequest) {
   try {
     // If briefId provided, fetch that specific page
     if (briefId) {
-      const pageResponse = await fetch(
-        `https://api.notion.com/v1/pages/${briefId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.NOTION_API_KEY}`,
-            "Notion-Version": "2022-06-28",
-          },
-        }
+      const page = await notionFetch<Parameters<typeof mapPageToBrief>[0]>(
+        `/pages/${briefId}`,
+        { errorMessage: "Brief not found" }
       );
 
-      if (!pageResponse.ok) {
-        const error = await pageResponse.json();
-        return NextResponse.json(
-          { success: false, error: error.message || "Brief not found" },
-          { status: 404 }
-        );
-      }
-
-      const page = await pageResponse.json();
-      const brief = mapPageToBrief(page);
-
-      return NextResponse.json({ success: true, briefs: [brief] });
+      return NextResponse.json({ success: true, briefs: [mapPageToBrief(page)] });
     }
 
     // Query by email
@@ -117,43 +102,33 @@ export async function GET(request: NextRequest) {
       email: { equals: email },
     };
 
-    const response = await fetch(
-      `https://api.notion.com/v1/databases/${DATABASE_ID}/query`,
+    const data = await notionFetch<{ results: Parameters<typeof mapPageToBrief>[0][] }>(
+      `/databases/${DATABASE_ID}/query`,
       {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.NOTION_API_KEY}`,
-          "Content-Type": "application/json",
-          "Notion-Version": "2022-06-28",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           filter,
           sorts: [{ timestamp: "created_time", direction: "descending" }],
           page_size: 50,
         }),
+        errorMessage: "Failed to fetch briefs",
       }
     );
 
-    if (!response.ok) {
-      const error = await response.json();
-      return NextResponse.json(
-        { success: false, error: error.message || "Failed to fetch briefs" },
-        { status: 500 }
-      );
+    if (!Array.isArray(data.results)) {
+      throw new NotionRequestError("Unexpected response shape from Notion query", 502);
     }
 
-    const data = await response.json();
     const briefs: Brief[] = data.results.map(mapPageToBrief);
 
     return NextResponse.json({ success: true, briefs });
   } catch (error) {
-    console.error("Error fetching briefs:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to fetch briefs",
-      },
-      { status: 500 }
+    const { status, body } = toErrorResponse(
+      "api/briefs GET",
+      error,
+      "Failed to fetch briefs"
     );
+    return NextResponse.json(body, { status });
   }
 }

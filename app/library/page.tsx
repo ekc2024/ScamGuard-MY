@@ -22,6 +22,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { copyToClipboard } from "@/lib/clipboard";
+import { errorMessage, fetchJson } from "@/lib/api-client";
 import type { ContentItem } from "@/app/api/library/route";
 
 function ContentCard({ 
@@ -92,12 +94,17 @@ function ContentModal({
   onOpenChange: (open: boolean) => void;
 }) {
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
 
   const handleCopy = async () => {
     if (item?.content) {
-      await navigator.clipboard.writeText(item.content);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      const succeeded = await copyToClipboard(item.content);
+      setCopied(succeeded);
+      setCopyFailed(!succeeded);
+      setTimeout(() => {
+        setCopied(false);
+        setCopyFailed(false);
+      }, 2000);
     }
   };
 
@@ -156,6 +163,11 @@ function ContentModal({
                       <Check className="w-4 h-4 mr-1 text-green-600" />
                       Copied!
                     </>
+                  ) : copyFailed ? (
+                    <>
+                      <Copy className="w-4 h-4 mr-1 text-red-600" />
+                      Copy failed
+                    </>
                   ) : (
                     <>
                       <Copy className="w-4 h-4 mr-1" />
@@ -198,19 +210,18 @@ export default function LibraryPage() {
       if (selectedCategory) params.set("category", selectedCategory);
       if (selectedType) params.set("type", selectedType);
 
-      const response = await fetch(`/api/library?${params.toString()}`);
-      const data = await response.json();
+      const data = await fetchJson<{
+        items: ContentItem[];
+        filters?: { categories: string[]; types: string[] };
+      }>(`/api/library?${params.toString()}`);
 
-      if (data.success) {
-        setItems(data.items);
-        if (data.filters) {
-          setAvailableFilters(data.filters);
-        }
-      } else {
-        setError(data.error || "Failed to load library");
+      setItems(data.items ?? []);
+      if (data.filters) {
+        setAvailableFilters(data.filters);
       }
-    } catch {
-      setError("Failed to load library. Please try again.");
+    } catch (err) {
+      console.error("Failed to load library:", err);
+      setError(errorMessage(err, "Failed to load library. Please try again."));
     } finally {
       setIsLoading(false);
     }

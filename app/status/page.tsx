@@ -17,6 +17,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { errorMessage, fetchJson } from "@/lib/api-client";
 import type { Brief } from "@/app/api/briefs/route";
 
 const STATUS_CONFIG: Record<string, { color: string; icon: typeof Clock; label: string }> = {
@@ -124,21 +125,18 @@ export default function StatusPage() {
     setHasSearched(true);
 
     try {
-      const response = await fetch(`/api/briefs?briefId=${encodeURIComponent(briefId)}`);
-      const data = await response.json();
+      const data = await fetchJson<{ briefs: Brief[] }>(
+        `/api/briefs?briefId=${encodeURIComponent(briefId)}`
+      );
 
-      if (data.success) {
-        setBriefs(data.briefs);
-        // Also set the email if available for future searches
-        if (data.briefs[0]?.email) {
-          setEmail(data.briefs[0].email);
-        }
-      } else {
-        setError(data.error || "Brief not found");
-        setBriefs([]);
+      setBriefs(data.briefs ?? []);
+      // Also set the email if available for future searches
+      if (data.briefs?.[0]?.email) {
+        setEmail(data.briefs[0].email);
       }
-    } catch {
-      setError("Failed to fetch brief. Please try again.");
+    } catch (err) {
+      console.error("Failed to fetch brief:", err);
+      setError(errorMessage(err, "Failed to fetch brief. Please try again."));
       setBriefs([]);
     } finally {
       setIsLoading(false);
@@ -154,20 +152,17 @@ export default function StatusPage() {
     setHasSearched(true);
 
     try {
-      const response = await fetch(`/api/briefs?email=${encodeURIComponent(email.trim())}`);
-      const data = await response.json();
+      const data = await fetchJson<{ briefs: Brief[] }>(
+        `/api/briefs?email=${encodeURIComponent(email.trim())}`
+      );
 
-      if (data.success) {
-        setBriefs(data.briefs);
-        if (data.briefs.length === 0) {
-          setError("No briefs found for this email address.");
-        }
-      } else {
-        setError(data.error || "Failed to fetch briefs");
-        setBriefs([]);
+      setBriefs(data.briefs ?? []);
+      if (!data.briefs?.length) {
+        setError("No briefs found for this email address.");
       }
-    } catch {
-      setError("Failed to fetch briefs. Please try again.");
+    } catch (err) {
+      console.error("Failed to fetch briefs:", err);
+      setError(errorMessage(err, "Failed to fetch briefs. Please try again."));
       setBriefs([]);
     } finally {
       setIsLoading(false);

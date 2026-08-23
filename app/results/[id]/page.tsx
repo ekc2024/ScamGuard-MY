@@ -26,6 +26,8 @@ import {
   Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { copyToClipboard } from "@/lib/clipboard";
+import { errorMessage, fetchJson } from "@/lib/api-client";
 import { StoryboardGrid, parseStoryboardFromText, type StoryboardShot } from "@/components/storyboard-grid";
 import type { BriefResult } from "@/app/api/briefs/[id]/route";
 
@@ -77,11 +79,16 @@ function ScoreRing({ score, label }: { score: number | null; label: string }) {
 
 function CopyButton({ text, label }: { text: string; label: string }) {
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const succeeded = await copyToClipboard(text);
+    setCopied(succeeded);
+    setCopyFailed(!succeeded);
+    setTimeout(() => {
+      setCopied(false);
+      setCopyFailed(false);
+    }, 2000);
   };
 
   return (
@@ -95,6 +102,11 @@ function CopyButton({ text, label }: { text: string; label: string }) {
         <>
           <Check className="w-4 h-4 mr-1 text-green-600" />
           Copied!
+        </>
+      ) : copyFailed ? (
+        <>
+          <Copy className="w-4 h-4 mr-1 text-red-600" />
+          Copy failed
         </>
       ) : (
         <>
@@ -110,7 +122,7 @@ function formatPromptsForClipboard(shots: StoryboardShot[]): string {
   if (shots.length === 0) return "";
   
   return shots.map((shot, index) => {
-    return `${index + 1}. [SHOT ${String(index + 1).padStart(2, '0')}] (${shot.duration}) - ${shot.model}\n${shot.prompt}`;
+    return `${index + 1}. [SHOT ${String(index + 1).padStart(2, '0')}] (${shot.duration}) - ${shot.wanModel}\n${shot.wanPrompt}`;
   }).join("\n\n");
 }
 
@@ -136,12 +148,12 @@ ${brief.script || 'Script not yet generated.'}
                          STORYBOARD (${shots.length} SHOTS)
 --------------------------------------------------------------------------------
 ${shots.map((shot, i) => `
-SHOT ${String(i + 1).padStart(2, '0')} | ${shot.duration} | ${shot.model}
+SHOT ${String(i + 1).padStart(2, '0')} | ${shot.duration} | ${shot.wanModel}
 ${'-'.repeat(60)}
-Visual: ${shot.description}
+Visual: ${shot.visualDescription}
 
 WAN AI Prompt:
-${shot.prompt}
+${shot.wanPrompt}
 `).join('\n')}
 
 --------------------------------------------------------------------------------
@@ -181,18 +193,30 @@ function ActionBar({
 }) {
   const router = useRouter();
   const [copiedAll, setCopiedAll] = useState(false);
+  const [copyAllFailed, setCopyAllFailed] = useState(false);
+  const [downloadError, setDownloadError] = useState("");
 
   const handleCopyAllPrompts = async () => {
     const formatted = formatPromptsForClipboard(shots);
     if (formatted) {
-      await navigator.clipboard.writeText(formatted);
-      setCopiedAll(true);
-      setTimeout(() => setCopiedAll(false), 2000);
+      const succeeded = await copyToClipboard(formatted);
+      setCopiedAll(succeeded);
+      setCopyAllFailed(!succeeded);
+      setTimeout(() => {
+        setCopiedAll(false);
+        setCopyAllFailed(false);
+      }, 2000);
     }
   };
 
   const handleDownload = () => {
-    generateBriefPDF(brief, shots);
+    try {
+      setDownloadError("");
+      generateBriefPDF(brief, shots);
+    } catch (err) {
+      console.error("Failed to generate brief download:", err);
+      setDownloadError(errorMessage(err, "Could not generate the download."));
+    }
   };
 
   const handleOpenInNotion = () => {
@@ -217,6 +241,11 @@ function ActionBar({
           <>
             <Check className="w-4 h-4 mr-1.5" />
             Copied!
+          </>
+        ) : copyAllFailed ? (
+          <>
+            <Copy className="w-4 h-4 mr-1.5" />
+            Copy failed
           </>
         ) : (
           <>
@@ -257,6 +286,13 @@ function ActionBar({
         <RotateCcw className="w-4 h-4 mr-1.5" />
         Start Over
       </Button>
+
+      {downloadError && (
+        <p className="w-full flex items-center gap-1.5 text-xs text-red-600">
+          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+          {downloadError}
+        </p>
+      )}
     </div>
   );
 }
@@ -356,16 +392,13 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
   useEffect(() => {
     const fetchBrief = async () => {
       try {
-        const response = await fetch(`/api/briefs/${resolvedParams.id}`);
-        const data = await response.json();
-
-        if (data.success) {
-          setBrief(data.brief);
-        } else {
-          setError(data.error || "Brief not found");
-        }
-      } catch {
-        setError("Failed to load brief. Please try again.");
+        const data = await fetchJson<{ brief: BriefResult }>(
+          `/api/briefs/${resolvedParams.id}`
+        );
+        setBrief(data.brief);
+      } catch (err) {
+        console.error("Failed to load brief:", err);
+        setError(errorMessage(err, "Failed to load brief. Please try again."));
       } finally {
         setIsLoading(false);
       }
