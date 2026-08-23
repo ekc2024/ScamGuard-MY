@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 export interface StoryboardShot {
   shotNumber: number;
@@ -25,15 +26,13 @@ const WAN_MODEL_COLORS: Record<string, { bg: string; text: string; border: strin
 
 function ShotCard({ shot }: { shot: StoryboardShot }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopyToClipboard();
 
   const modelStyle = WAN_MODEL_COLORS[shot.wanModel] || WAN_MODEL_COLORS["Wan-T2V"];
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    await navigator.clipboard.writeText(shot.wanPrompt);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    await copy(shot.wanPrompt);
   };
 
   return (

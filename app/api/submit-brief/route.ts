@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { Client } from "@notionhq/client";
+import { catchResponse, errorResponse, successResponse } from "@/lib/api-response";
+import { BRIEFS_DATABASE_ID } from "@/lib/notion";
 
 const notion = new Client({
   auth: process.env.NOTION_API_KEY,
 });
-
-const DATABASE_ID = "cc27f313-ae7f-49c9-b67e-eabdfc9dfea8";
 
 export interface BriefFormData {
   briefTitle: string;
@@ -30,15 +30,12 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!data.briefTitle || !data.client) {
-      return NextResponse.json(
-        { success: false, error: "Brief Title and Client are required" },
-        { status: 400 }
-      );
+      return errorResponse("Brief Title and Client are required", 400);
     }
 
     // Create the page in Notion with exact property names
     const response = await notion.pages.create({
-      parent: { database_id: DATABASE_ID },
+      parent: { database_id: BRIEFS_DATABASE_ID },
       properties: {
         "Brief Title": {
           title: [{ text: { content: data.briefTitle } }],
@@ -96,20 +93,11 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({
-      success: true,
+    return successResponse({
       message: "Brief submitted successfully",
       pageId: response.id,
     });
   } catch (error) {
-    console.error("Error creating Notion page:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          error instanceof Error ? error.message : "Failed to submit brief",
-      },
-      { status: 500 }
-    );
+    return catchResponse(error, "Error creating Notion page:", "Failed to submit brief");
   }
 }
