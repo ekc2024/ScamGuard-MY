@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ScamGuard MY - Scam Triage</title>
+    <meta
+      name="description"
+      content="Paste a suspicious Malaysian scam message and get a STOP-CHECK-REPORT assessment. AI-generated assessment, not an official determination."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="page-header">
+        <p class="kicker">ScamGuard MY &middot; hackathon prototype</p>
+        <h1>Scam Triage</h1>
+        <p class="lede">
+          Paste a forwarded message and get a STOP-CHECK-REPORT assessment against six scam categories seen in the
+          TAR UMT Scam Ready Movers survey (18-20 Aug 2026).
+        </p>
+        <ul class="disclaimers" id="header-disclaimers">
+          <li>AI-generated assessment - not an official determination</li>
+          <li>Checked against demo reference data, not a live database</li>
+        </ul>
+      </header>
+
+      <form id="triage-form" class="card">
+        <label for="message">Paste the suspicious message</label>
+        <textarea
+          id="message"
+          name="message"
+          rows="7"
+          maxlength="4000"
+          placeholder="Paste the WhatsApp, SMS or social media message here, including any link or phone number."
+        ></textarea>
+        <div class="form-row">
+          <button type="submit" id="submit" disabled>Check this message</button>
+          <span class="hint">Text only. The assessment itself runs in your browser - nothing is uploaded or stored.</span>
+        </div>
+        <label class="opt-in" for="enrich">
+          <input type="checkbox" id="enrich" name="enrich" />
+          <span>
+            Add an AI plain-language explanation (optional). This sends the message text to Qwen via ModelScope and
+            never changes the verdict.
+          </span>
+        </label>
+        <div class="samples">
+          <span class="hint">Try an example:</span>
+          <span id="sample-buttons"></span>
+        </div>
+        <p class="error" id="error" hidden></p>
+        <p class="error" id="boot-error">
+          This page has not finished loading. It must be served over HTTP (run <code>npm start</code> and open
+          http://localhost:3100) - opening index.html directly from disk will not work.
+        </p>
+      </form>
+
+      <section id="result" class="result" hidden></section>
+
+      <footer class="page-footer">
+        <p id="reference-meta"></p>
+      </footer>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
