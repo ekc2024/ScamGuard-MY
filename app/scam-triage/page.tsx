@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import {
   ArrowRight,
   ExternalLink,
@@ -123,7 +122,7 @@ export default function ScamTriagePage() {
             demo uses deterministic rules for common Malaysian and ASEAN scam
             patterns.
           </p>
-          <Link
+          <a
             href={CLAUDE_ARTIFACT_URL}
             target="_blank"
             rel="noreferrer"
@@ -131,7 +130,7 @@ export default function ScamTriagePage() {
           >
             View the source prototype
             <ExternalLink className="h-3.5 w-3.5" />
-          </Link>
+          </a>
         </header>
 
         <Card className="border-[#1A1F36]/10 shadow-lg">

@@ -30,8 +30,8 @@ export const SCAM_SIGNAL_DEFINITIONS: ScamSignalDefinition[] = [
     label: "Payment or money-transfer request",
     weight: 25,
     patterns: [
-      /\b(?:bank\s+transfer|transfer\s+(?:money|funds)|make\s+a\s+payment|pay\s+now|send\s+money|wire\s+money|cash\s+deposit|gift\s+card)\b/i,
-      /\b(?:pindahan|pemindahan|buat\s+bayaran|bayar\s+sekarang|hantar\s+duit|pindah\s+duit|duit\s+segera|deposit\s+tunai)\b/i,
+      /\b(?:bank\s+transfer|transfer\s+(?:money|funds)|make\s+a\s+payment|pay\s+now|pay\s+(?:(?:(?:rm|myr|sgd|usd)\s*)?\d+(?:[.,]\d{1,2})?|[$]\s*\d+(?:[.,]\d{1,2})?|(?:the|this|a|your)\s+(?:fee|amount|bill))\s+now|send\s+money|wire\s+money|cash\s+deposit|gift\s+card)\b/i,
+      /\b(?:pindahan|pemindahan|buat\s+bayaran|bayar\s+sekarang|bayar\s+(?:(?:(?:rm|myr|sgd|usd)\s*)?\d+(?:[.,]\d{1,2})?|[$]\s*\d+(?:[.,]\d{1,2})?|(?:yuran|jumlah|bil|bayaran)(?:\s+(?:ini|tersebut|anda))?)\s+sekarang|hantar\s+duit|pindah\s+duit|duit\s+segera|deposit\s+tunai)\b/i,
     ],
   },
   {
