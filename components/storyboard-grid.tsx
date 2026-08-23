@@ -144,52 +144,76 @@ export function StoryboardGrid({ shots, className }: StoryboardGridProps) {
 }
 
 // Helper function to parse storyboard from markdown/text format
+// Supports format: SHOT 01 | 5s | Wan-T2V | Label\nPrompt content...
 export function parseStoryboardFromText(text: string): StoryboardShot[] {
   const shots: StoryboardShot[] = [];
   
-  // Match patterns like "SHOT 01" or "Shot 1" followed by content
-  const shotRegex = /(?:SHOT|Shot)\s*(\d+)[:\s]*([^\n]+)?/gi;
-  const sections = text.split(/(?:SHOT|Shot)\s*\d+/i).filter(Boolean);
-  
-  let match;
-  let index = 0;
-  
-  while ((match = shotRegex.exec(text)) !== null) {
-    const shotNumber = parseInt(match[1], 10);
-    const section = sections[index] || "";
+  // Split by double newline to get individual shot blocks
+  const shotBlocks = text.split(/\n\n+/).filter(block => 
+    block.trim().match(/^SHOT\s*\d+/i)
+  );
+
+  for (const block of shotBlocks) {
+    const lines = block.trim().split("\n");
+    if (lines.length === 0) continue;
+
+    // Parse header line: SHOT 01 | 5s | Wan-T2V | Label
+    const headerLine = lines[0];
+    const headerMatch = headerLine.match(/SHOT\s*(\d+)\s*\|\s*(\d+s?)\s*\|\s*(Wan-[A-Z0-9]+)\s*\|\s*(.+)/i);
     
-    // Extract duration (e.g., "5s", "10s")
-    const durationMatch = section.match(/(\d+)s/i);
-    const duration = durationMatch ? `${durationMatch[1]}s` : "5s";
-    
-    // Determine WAN model from content
-    let wanModel: "Wan-T2V" | "Wan-I2V" | "Wan-R2V" = "Wan-T2V";
-    if (section.toLowerCase().includes("wan-i2v") || section.toLowerCase().includes("image-to-video")) {
-      wanModel = "Wan-I2V";
-    } else if (section.toLowerCase().includes("wan-r2v") || section.toLowerCase().includes("reference")) {
-      wanModel = "Wan-R2V";
+    if (headerMatch) {
+      const shotNumber = parseInt(headerMatch[1], 10);
+      const duration = headerMatch[2].includes('s') ? headerMatch[2] : `${headerMatch[2]}s`;
+      const modelRaw = headerMatch[3];
+      const label = headerMatch[4].trim();
+      
+      // Normalize WAN model
+      let wanModel: "Wan-T2V" | "Wan-I2V" | "Wan-R2V" = "Wan-T2V";
+      if (modelRaw.toLowerCase().includes("i2v")) {
+        wanModel = "Wan-I2V";
+      } else if (modelRaw.toLowerCase().includes("r2v")) {
+        wanModel = "Wan-R2V";
+      }
+      
+      // The prompt is everything after the header line
+      const promptLines = lines.slice(1).join("\n").trim();
+      
+      shots.push({
+        shotNumber,
+        duration,
+        wanModel,
+        visualDescription: label,
+        wanPrompt: promptLines || label,
+      });
+    } else {
+      // Fallback: try to parse older format
+      const fallbackMatch = headerLine.match(/SHOT\s*(\d+)/i);
+      if (fallbackMatch) {
+        const shotNumber = parseInt(fallbackMatch[1], 10);
+        const content = lines.slice(1).join("\n").trim() || lines[0];
+        
+        // Extract duration
+        const durationMatch = content.match(/(\d+)s/i);
+        const duration = durationMatch ? `${durationMatch[1]}s` : "5s";
+        
+        // Detect model
+        let wanModel: "Wan-T2V" | "Wan-I2V" | "Wan-R2V" = "Wan-T2V";
+        if (content.toLowerCase().includes("wan-i2v")) wanModel = "Wan-I2V";
+        else if (content.toLowerCase().includes("wan-r2v")) wanModel = "Wan-R2V";
+        
+        shots.push({
+          shotNumber,
+          duration,
+          wanModel,
+          visualDescription: content.split("\n")[0].substring(0, 80) || "Visual scene",
+          wanPrompt: content,
+        });
+      }
     }
-    
-    // Extract visual description (first line or sentence)
-    const lines = section.trim().split("\n").filter(Boolean);
-    const visualDescription = lines[0]?.replace(/^\s*[-:]\s*/, "").trim() || "Visual scene";
-    
-    // Extract WAN prompt (look for prompt section or use full content)
-    const promptMatch = section.match(/(?:WAN\s*(?:AI\s*)?Prompt|Prompt)[:\s]*([^]*?)(?=\n\n|$)/i);
-    const wanPrompt = promptMatch 
-      ? promptMatch[1].trim() 
-      : section.replace(/^\s*[-:]\s*/, "").trim();
-    
-    shots.push({
-      shotNumber,
-      duration,
-      wanModel,
-      visualDescription,
-      wanPrompt,
-    });
-    
-    index++;
   }
+  
+  // Sort by shot number
+  shots.sort((a, b) => a.shotNumber - b.shotNumber);
   
   return shots;
 }
